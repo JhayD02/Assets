@@ -14,16 +14,13 @@ public class NetworkUI : NetworkManager
     [SerializeField] private GameObject clientPanel;
     [SerializeField] private GameObject serverActivePanel;
     [SerializeField] private GameObject clientActivePanel;
-
-    [SerializeField] private TMP_InputField hostPortInput;
     [SerializeField] private TMP_InputField clientPortInput;
-    [SerializeField] private TMP_InputField hostIpInput;
-    [SerializeField] private TMP_InputField maxClientsInput;
-
+    [SerializeField] private TMP_Text hostIpInput;
+    [SerializeField] private TMP_Text maxClientsInput;
     [SerializeField] private TMP_Text serverStatusText;
     [SerializeField] private TMP_Text clientStatusText;
     [SerializeField] private Transform clientListContainer;
-    [SerializeField] private GameObject clientListItemPrefab; // Prefab for client UI
+    [SerializeField] private GameObject clientListItemPrefab;
 
     private ushort hostPort;
     private int maxClients;
@@ -36,7 +33,7 @@ public class NetworkUI : NetworkManager
     {
         networkTransport = GetComponent<kcp2k.KcpTransport>();
 
-        mainMenuPanel.SetActive(true);
+        mainMenuPanel.SetActive(false);
         hostPanel.SetActive(false);
         clientPanel.SetActive(false);
         serverActivePanel.SetActive(false);
@@ -66,20 +63,27 @@ public class NetworkUI : NetworkManager
 
     public void StartHosting()
     {
-        if (ushort.TryParse(hostPortInput.text, out hostPort) && int.TryParse(maxClientsInput.text, out maxClients))
-        {
-            networkTransport.Port = hostPort;
-            maxConnections = maxClients;
-            StartHost();
+        System.Random random = new System.Random();
+        hostPort = (ushort)random.Next(10000, 30001);
 
-            hostPanel.SetActive(false);
-            serverActivePanel.SetActive(true);
-            UpdateServerStatus();
-        }
-        else
+        maxClients = 2;
+
+        if (hostIpInput != null)
         {
-            Debug.LogWarning("Invalid Host Port or Max Clients Input!");
+            hostIpInput.text = hostPort.ToString();
         }
+        if (maxClientsInput != null)
+        {
+            maxClientsInput.text = maxClients.ToString();
+        }
+
+        networkTransport.Port = hostPort;
+        maxConnections = maxClients;
+        StartHost();
+
+        hostPanel.SetActive(false);
+        serverActivePanel.SetActive(true);
+        UpdateServerStatus();
     }
 
     public void StartClientConnection()
@@ -122,7 +126,6 @@ public class NetworkUI : NetworkManager
 
     private void UpdateClientStatus()
     {
-        
         clientStatusText.text = $"<b>Client Connected</b>\nHost Port: {networkTransport.Port}\nHost IP: {networkAddress}";
     }
 
@@ -181,6 +184,7 @@ public class NetworkUI : NetworkManager
         Debug.Log("Disconnected from server. Returning to main menu.");
         BackToMainMenu();
     }
+
     public override void OnServerDisconnect(NetworkConnectionToClient conn)
     {
         clients.Remove(conn);
