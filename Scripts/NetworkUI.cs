@@ -193,6 +193,17 @@ public class NetworkUI : NetworkManager
         Debug.Log("Client Disconnected!");
     }
 
+    public override void OnServerAddPlayer(NetworkConnectionToClient conn)
+    {
+        // Instantiate the player prefab at the desired position and rotation
+        GameObject player = Instantiate(playerPrefab, Vector3.zero, Quaternion.identity);
+
+        // Add the player to the connection
+        NetworkServer.AddPlayerForConnection(conn, player);
+
+        Debug.Log("Player added to the server.");
+    }
+
     public string GetLocalIPAddress()
     {
         IPHostEntry host = Dns.GetHostEntry(Dns.GetHostName());
