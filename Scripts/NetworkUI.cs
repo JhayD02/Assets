@@ -14,17 +14,18 @@ public class NetworkUI : NetworkManager
     [SerializeField] private GameObject clientPanel;
     [SerializeField] private GameObject serverActivePanel;
     [SerializeField] private GameObject clientActivePanel;
+    [SerializeField] private GameObject playerUIPanel; // Reference to the player UI panel
+
     [SerializeField] private TMP_InputField clientPortInput;
-    [SerializeField] private TMP_Text hostIpInput;
-    [SerializeField] private TMP_Text maxClientsInput;
+
     [SerializeField] private TMP_Text serverStatusText;
     [SerializeField] private TMP_Text clientStatusText;
     [SerializeField] private Transform clientListContainer;
-    [SerializeField] private GameObject clientListItemPrefab;
+    [SerializeField] private GameObject clientListItemPrefab; // Prefab for client UI
 
     private ushort hostPort;
-    private int maxClients;
-    private string hostIp;
+    private int maxClients = 2; 
+    private string hostIp = "127.0.0.1"; // Default IP address
 
     private kcp2k.KcpTransport networkTransport;
     private List<NetworkConnectionToClient> clients = new List<NetworkConnectionToClient>();
@@ -33,11 +34,12 @@ public class NetworkUI : NetworkManager
     {
         networkTransport = GetComponent<kcp2k.KcpTransport>();
 
-        mainMenuPanel.SetActive(false);
+        mainMenuPanel.SetActive(true);
         hostPanel.SetActive(false);
         clientPanel.SetActive(false);
         serverActivePanel.SetActive(false);
         clientActivePanel.SetActive(false);
+        playerUIPanel.SetActive(false); // Ensure player UI is initially disabled
     }
 
     public void OpenHostPanel()
@@ -59,30 +61,19 @@ public class NetworkUI : NetworkManager
         serverActivePanel.SetActive(false);
         clientActivePanel.SetActive(false);
         mainMenuPanel.SetActive(true);
+        playerUIPanel.SetActive(false); // Disable player UI when returning to main menu
     }
 
     public void StartHosting()
     {
-        System.Random random = new System.Random();
-        hostPort = (ushort)random.Next(10000, 30001);
-
-        maxClients = 2;
-
-        if (hostIpInput != null)
-        {
-            hostIpInput.text = hostPort.ToString();
-        }
-        if (maxClientsInput != null)
-        {
-            maxClientsInput.text = maxClients.ToString();
-        }
-
+        hostPort = (ushort)Random.Range(10000, 30001);
         networkTransport.Port = hostPort;
         maxConnections = maxClients;
         StartHost();
 
         hostPanel.SetActive(false);
         serverActivePanel.SetActive(true);
+        playerUIPanel.SetActive(true); // Enable player UI when hosting starts
         UpdateServerStatus();
     }
 
@@ -91,11 +82,12 @@ public class NetworkUI : NetworkManager
         if (ushort.TryParse(clientPortInput.text, out hostPort))
         {
             networkTransport.Port = hostPort;
-            networkAddress = hostIpInput.text;
+            networkAddress = hostIp; // Use default IP address
             StartClient();
 
             clientPanel.SetActive(false);
             clientActivePanel.SetActive(true);
+            playerUIPanel.SetActive(true); // Enable player UI when client connects
             UpdateClientStatus();
         }
         else
@@ -109,6 +101,7 @@ public class NetworkUI : NetworkManager
         StopHost();
         serverActivePanel.SetActive(false);
         mainMenuPanel.SetActive(true);
+        playerUIPanel.SetActive(false); // Disable player UI when hosting stops
     }
 
     public void StopClientConnection()
@@ -116,6 +109,7 @@ public class NetworkUI : NetworkManager
         StopClient();
         clientActivePanel.SetActive(false);
         mainMenuPanel.SetActive(true);
+        playerUIPanel.SetActive(false); // Disable player UI when client disconnects
     }
 
     private void UpdateServerStatus()
@@ -131,6 +125,18 @@ public class NetworkUI : NetworkManager
 
     private void UpdateClientList()
     {
+        if (clientListContainer == null)
+        {
+            Debug.LogError("clientListContainer is not assigned!");
+            return;
+        }
+
+        if (clientListItemPrefab == null)
+        {
+            Debug.LogError("clientListItemPrefab is not assigned!");
+            return;
+        }
+
         foreach (Transform child in clientListContainer)
         {
             Destroy(child.gameObject);
@@ -191,17 +197,6 @@ public class NetworkUI : NetworkManager
         base.OnServerDisconnect(conn);
         UpdateClientList();
         Debug.Log("Client Disconnected!");
-    }
-
-    public override void OnServerAddPlayer(NetworkConnectionToClient conn)
-    {
-        // Instantiate the player prefab at the desired position and rotation
-        GameObject player = Instantiate(playerPrefab, Vector3.zero, Quaternion.identity);
-
-        // Add the player to the connection
-        NetworkServer.AddPlayerForConnection(conn, player);
-
-        Debug.Log("Player added to the server.");
     }
 
     public string GetLocalIPAddress()
