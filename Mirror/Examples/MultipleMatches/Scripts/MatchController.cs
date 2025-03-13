@@ -64,9 +64,6 @@ namespace Mirror.Examples.MultipleMatch
 
             exitButton.gameObject.SetActive(false);
             playAgainButton.gameObject.SetActive(false);
-
-            // Assign handler for SyncDictionary changes
-            matchPlayerData.OnChange = UpdateWins;
         }
 
         [ClientCallback]
@@ -209,6 +206,9 @@ namespace Mirror.Examples.MultipleMatch
         [ServerCallback]
         public void RestartGame()
         {
+            foreach (CellGUI cellGUI in MatchCells.Values)
+                cellGUI.SetPlayer(null);
+
             boardScore = CellValue.None;
 
             NetworkIdentity[] keys = new NetworkIdentity[matchPlayerData.Keys.Count];
@@ -253,7 +253,7 @@ namespace Mirror.Examples.MultipleMatch
         }
 
         [ServerCallback]
-        public void OnPlayerDisconnect(NetworkConnectionToClient conn)
+        public void OnPlayerDisconnected(NetworkConnectionToClient conn)
         {
             // Check that the disconnecting client is a player in this match
             if (player1 == conn.identity || player2 == conn.identity)
@@ -265,7 +265,7 @@ namespace Mirror.Examples.MultipleMatch
         {
             RpcExitGame();
 
-            canvasController.OnPlayerDisconnect -= OnPlayerDisconnect;
+            canvasController.OnPlayerDisconnected -= OnPlayerDisconnected;
 
             // Wait for the ClientRpc to get out ahead of object destruction
             yield return new WaitForSeconds(0.1f);

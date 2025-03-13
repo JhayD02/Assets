@@ -10,12 +10,10 @@ namespace Mirror
     {
         uint sendIntervalCounter = 0;
         double lastSendIntervalTime = double.MinValue;
-        TransformSnapshot? pendingSnapshot;
 
         [Header("Additional Settings")]
         [Tooltip("If we only sync on change, then we need to correct old snapshots if more time than sendInterval * multiplier has elapsed.\n\nOtherwise the first move will always start interpolating from the last move sequence's time, which will make it stutter when starting every time.")]
         public float onlySyncOnChangeCorrectionMultiplier = 2;
-        public bool useFixedUpdate;
 
         [Header("Rotation")]
         [Tooltip("Sensitivity of changes needed before an updated state is sent over the network")]
@@ -52,18 +50,6 @@ namespace Mirror
             // 'else if' because host mode shouldn't send anything to server.
             // it is the server. don't overwrite anything there.
             else if (isClient) UpdateClient();
-        }
-
-        void FixedUpdate()
-        {
-            if (!useFixedUpdate) return;
-
-            if (pendingSnapshot.HasValue && !IsClientWithAuthority)
-            {
-                // Apply via base method, but in FixedUpdate
-                Apply(pendingSnapshot.Value, pendingSnapshot.Value);
-                pendingSnapshot = null;
-            }
         }
 
         void LateUpdate()
@@ -116,41 +102,24 @@ namespace Mirror
 
         protected virtual void UpdateClient()
         {
-            if (useFixedUpdate)
+            // client authority, and local player (= allowed to move myself)?
+            if (!IsClientWithAuthority)
             {
-                if (!IsClientWithAuthority && clientSnapshots.Count > 0)
+                // only while we have snapshots
+                if (clientSnapshots.Count > 0)
                 {
+                    // step the interpolation without touching time.
+                    // NetworkClient is responsible for time globally.
                     SnapshotInterpolation.StepInterpolation(
                         clientSnapshots,
-                        NetworkTime.time,
+                        NetworkTime.time, // == NetworkClient.localTimeline from snapshot interpolation
                         out TransformSnapshot from,
                         out TransformSnapshot to,
-                        out double t
-                    );
-                    pendingSnapshot = TransformSnapshot.Interpolate(from, to, t);
-                }
-            }
-            else
-            {
-                // client authority, and local player (= allowed to move myself)?
-                if (!IsClientWithAuthority)
-                {
-                    // only while we have snapshots
-                    if (clientSnapshots.Count > 0)
-                    {
-                        // step the interpolation without touching time.
-                        // NetworkClient is responsible for time globally.
-                        SnapshotInterpolation.StepInterpolation(
-                            clientSnapshots,
-                            NetworkTime.time, // == NetworkClient.localTimeline from snapshot interpolation
-                            out TransformSnapshot from,
-                            out TransformSnapshot to,
-                            out double t);
+                        out double t);
 
-                        // interpolate & apply
-                        TransformSnapshot computed = TransformSnapshot.Interpolate(from, to, t);
-                        Apply(computed, to);
-                    }
+                    // interpolate & apply
+                    TransformSnapshot computed = TransformSnapshot.Interpolate(from, to, t);
+                    Apply(computed, to);
                 }
             }
         }

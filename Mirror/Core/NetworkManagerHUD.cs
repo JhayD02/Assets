@@ -55,7 +55,7 @@ namespace Mirror
                 // cant be a server in webgl build
                 if (GUILayout.Button("Single Player"))
                 {
-                    NetworkServer.listen = false;
+                    NetworkServer.dontListen = true;
                     manager.StartHost();
                 }
 #else

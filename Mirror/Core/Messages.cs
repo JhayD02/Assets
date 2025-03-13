@@ -52,19 +52,13 @@ namespace Mirror
         public ArraySegment<byte> payload;
     }
 
-    [Flags] public enum SpawnFlags : byte
-    {
-        None          = 0,
-        isOwner       = 1 << 0,
-        isLocalPlayer = 1 << 1
-    }
-
     public struct SpawnMessage : NetworkMessage
     {
         // netId of new or existing object
         public uint netId;
-        // isOwner and isLocalPlayer are merged into one byte via bitwise op
-        public SpawnFlags spawnFlags;
+        public bool isLocalPlayer;
+        // Sets hasAuthority on the spawned object
+        public bool isOwner;
         public ulong sceneId;
         // If sceneId != 0 then it is used instead of assetId
         public uint assetId;
@@ -77,53 +71,13 @@ namespace Mirror
         // serialized component data
         // ArraySegment to avoid unnecessary allocations
         public ArraySegment<byte> payload;
-
-        // Backwards compatibility after implementing spawnFlags
-        public bool isOwner
-        {
-            get => spawnFlags.HasFlag(SpawnFlags.isOwner);
-            set => spawnFlags = 
-                value 
-                ? spawnFlags | SpawnFlags.isOwner 
-                : spawnFlags & ~SpawnFlags.isOwner;
-        }
-
-        // Backwards compatibility after implementing spawnFlags
-        public bool isLocalPlayer
-        {
-            get => spawnFlags.HasFlag(SpawnFlags.isLocalPlayer);
-            set => spawnFlags = 
-                value 
-                ? spawnFlags | SpawnFlags.isLocalPlayer 
-                : spawnFlags & ~SpawnFlags.isLocalPlayer;
-        }
     }
 
     public struct ChangeOwnerMessage : NetworkMessage
     {
         public uint netId;
-        // isOwner and isLocalPlayer are merged into one byte via bitwise op
-        public SpawnFlags spawnFlags;
-
-        // Backwards compatibility after implementing spawnFlags
-        public bool isOwner
-        {
-            get => spawnFlags.HasFlag(SpawnFlags.isOwner);
-            set => spawnFlags = 
-                value 
-                ? spawnFlags | SpawnFlags.isOwner 
-                : spawnFlags & ~SpawnFlags.isOwner;
-        }
-
-        // Backwards compatibility after implementing spawnFlags
-        public bool isLocalPlayer
-        {
-            get => spawnFlags.HasFlag(SpawnFlags.isLocalPlayer);
-            set => spawnFlags = 
-                value 
-                ? spawnFlags | SpawnFlags.isLocalPlayer 
-                : spawnFlags & ~SpawnFlags.isLocalPlayer;
-        }
+        public bool isOwner;
+        public bool isLocalPlayer;
     }
 
     public struct ObjectSpawnStartedMessage : NetworkMessage {}

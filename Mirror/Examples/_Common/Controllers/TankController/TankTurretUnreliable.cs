@@ -7,7 +7,7 @@ namespace Mirror.Examples.Common.Controllers.Tank
     [RequireComponent(typeof(NetworkTransformUnreliable))]
     public class TankTurretUnreliable : TankTurretBase
     {
-        [Header("Network Transforms")]
+        [Header("Components")]
         public NetworkTransformUnreliable turretNetworkTransform;
         public NetworkTransformUnreliable barrelNetworkTransform;
 

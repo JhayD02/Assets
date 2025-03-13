@@ -48,28 +48,28 @@ namespace Mirror
     }
 
     /// <summary>
-    /// Only an active server will run this method.
-    /// <para>Prints a warning if a client or in-active server tries to execute this method.</para>
+    /// Prevents clients from running this method.
+    /// <para>Prints a warning if a client tries to execute this method.</para>
     /// </summary>
     [AttributeUsage(AttributeTargets.Method)]
     public class ServerAttribute : Attribute {}
 
     /// <summary>
-    /// Only an active server will run this method.
+    /// Prevents clients from running this method.
     /// <para>No warning is thrown.</para>
     /// </summary>
     [AttributeUsage(AttributeTargets.Method)]
     public class ServerCallbackAttribute : Attribute {}
 
     /// <summary>
-    /// Only an active client will run this method.
-    /// <para>Prints a warning if the server or in-active client tries to execute this method.</para>
+    /// Prevents the server from running this method.
+    /// <para>Prints a warning if the server tries to execute this method.</para>
     /// </summary>
     [AttributeUsage(AttributeTargets.Method)]
     public class ClientAttribute : Attribute {}
 
     /// <summary>
-    /// Only an active client will run this method.
+    /// Prevents the server from running this method.
     /// <para>No warning is printed.</para>
     /// </summary>
     [AttributeUsage(AttributeTargets.Method)]

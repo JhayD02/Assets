@@ -57,8 +57,6 @@ namespace Mirror
         public static void WriteDecimal(this NetworkWriter writer, decimal value) => writer.WriteBlittable(value);
         public static void WriteDecimalNullable(this NetworkWriter writer, decimal? value) => writer.WriteBlittableNullable(value);
 
-        public static void WriteHalf(this NetworkWriter writer, Half value) => writer.WriteUShort(value._value);
-
         public static void WriteString(this NetworkWriter writer, string value)
         {
             // we offset count by '1' to easily support null without writing another byte.
@@ -365,25 +363,28 @@ namespace Mirror
         // structs may have .Set<T> members which weaver needs to be able to
         // fully serialize for NetworkMessages etc.
         // note that Weaver/Writers/GenerateWriter() handles this manually.
-        public static void WriteHashSet<T>(this NetworkWriter writer, HashSet<T> hashSet)
-        {
-            // we offset count by '1' to easily support null without writing another byte.
-            // encoding null as '0' instead of '-1' also allows for better compression
-            // (ushort vs. short / varuint vs. varint) etc.
-            if (hashSet is null)
-            {
-                // most sizes are small, write size as VarUInt!
-                Compression.CompressVarUInt(writer, 0u);
-                //writer.WriteUInt(0);
-                return;
-            }
-
-            // most sizes are small, write size as VarUInt!
-            Compression.CompressVarUInt(writer, checked((uint)hashSet.Count) + 1u);
-            //writer.WriteUInt(checked((uint)hashSet.Count) + 1u);
-            foreach (T item in hashSet)
-                writer.Write(item);
-        }
+        // TODO writer not found. need to adjust weaver first. see tests.
+        // /*
+        // public static void WriteHashSet<T>(this NetworkWriter writer, HashSet<T> hashSet)
+        // {
+        //     // we offset count by '1' to easily support null without writing another byte.
+        //     // encoding null as '0' instead of '-1' also allows for better compression
+        //     // (ushort vs. short / varuint vs. varint) etc.
+        //     if (hashSet is null)
+        //     {
+        //         // most sizes are small, write size as VarUInt!
+        //         Compression.CompressVarUInt(writer, 0u);
+        //         //writer.WriteUInt(0);
+        //         return;
+        //     }
+        //
+        //     // most sizes are small, write size as VarUInt!
+        //     Compression.CompressVarUInt(writer, checked((uint)hashSet.Count) + 1u);
+        //     //writer.WriteUInt(checked((uint)hashSet.Count) + 1u);
+        //     foreach (T item in hashSet)
+        //         writer.Write(item);
+        // }
+        // */
 
         public static void WriteArray<T>(this NetworkWriter writer, T[] array)
         {

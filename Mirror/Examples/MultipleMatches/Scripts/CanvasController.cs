@@ -12,7 +12,7 @@ namespace Mirror.Examples.MultipleMatch
         /// <summary>
         /// Match Controllers listen for this to terminate their match and clean up
         /// </summary>
-        public event Action<NetworkConnectionToClient> OnPlayerDisconnect;
+        public event Action<NetworkConnectionToClient> OnPlayerDisconnected;
 
         /// <summary>
         /// Cross-reference of client that created the corresponding match in openMatches below
@@ -32,7 +32,7 @@ namespace Mirror.Examples.MultipleMatch
         /// <summary>
         /// Player informations by Network Connection
         /// </summary>
-        internal static readonly Dictionary<NetworkConnectionToClient, PlayerInfo> playerInfos = new Dictionary<NetworkConnectionToClient, PlayerInfo>();
+        internal static readonly Dictionary<NetworkConnection, PlayerInfo> playerInfos = new Dictionary<NetworkConnection, PlayerInfo>();
 
         /// <summary>
         /// Network Connections that have neither started nor joined a match yet
@@ -239,8 +239,8 @@ namespace Mirror.Examples.MultipleMatch
         [ServerCallback]
         internal IEnumerator OnServerDisconnect(NetworkConnectionToClient conn)
         {
-            // Invoke OnPlayerDisconnect on all instances of MatchController
-            OnPlayerDisconnect?.Invoke(conn);
+            // Invoke OnPlayerDisconnected on all instances of MatchController
+            OnPlayerDisconnected?.Invoke(conn);
 
             if (playerMatches.TryGetValue(conn, out Guid matchId))
             {
@@ -289,6 +289,12 @@ namespace Mirror.Examples.MultipleMatch
         internal void OnStopServer()
         {
             ResetCanvas();
+        }
+
+        [ClientCallback]
+        internal void OnClientConnect()
+        {
+            playerInfos.Add(NetworkClient.connection, new PlayerInfo { playerIndex = this.playerIndex, ready = false });
         }
 
         [ClientCallback]
@@ -514,7 +520,7 @@ namespace Mirror.Examples.MultipleMatch
                 matchConnections.Remove(matchId);
                 SendMatchList();
 
-                OnPlayerDisconnect += matchController.OnPlayerDisconnect;
+                OnPlayerDisconnected += matchController.OnPlayerDisconnected;
             }
         }
 

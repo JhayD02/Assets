@@ -51,11 +51,13 @@ namespace Mirror.Transports.Encryption
             return publicKeyInfo.ToAsn1Object().GetDerEncoded();
         }
 
-        public static AsymmetricKeyParameter DeserializePublicKey(ArraySegment<byte> pubKey) =>
+        public static AsymmetricKeyParameter DeserializePublicKey(ArraySegment<byte> pubKey)
+        {
             // And then we do this to deserialize from the DER (from above)
             // the "new MemoryStream" actually saves an allocation, since otherwise the ArraySegment would be converted
             // to a byte[] first and then shoved through a MemoryStream
-            PublicKeyFactory.CreateKey(new MemoryStream(pubKey.Array, pubKey.Offset, pubKey.Count, false));
+            return PublicKeyFactory.CreateKey(new MemoryStream(pubKey.Array, pubKey.Offset, pubKey.Count, false));
+        }
 
         public static byte[] SerializePrivateKey(AsymmetricKeyParameter privateKey)
         {
@@ -64,11 +66,13 @@ namespace Mirror.Transports.Encryption
             return privateKeyInfo.ToAsn1Object().GetDerEncoded();
         }
 
-        public static AsymmetricKeyParameter DeserializePrivateKey(ArraySegment<byte> privateKey) =>
+        public static AsymmetricKeyParameter DeserializePrivateKey(ArraySegment<byte> privateKey)
+        {
             // And then we do this to deserialize from the DER (from above)
             // the "new MemoryStream" actually saves an allocation, since otherwise the ArraySegment would be converted
             // to a byte[] first and then shoved through a MemoryStream
-            PrivateKeyFactory.CreateKey(new MemoryStream(privateKey.Array, privateKey.Offset, privateKey.Count, false));
+            return PrivateKeyFactory.CreateKey(new MemoryStream(privateKey.Array, privateKey.Offset, privateKey.Count, false));
+        }
 
         public static string PubKeyFingerprint(ArraySegment<byte> publicKeyBytes)
         {
@@ -86,7 +90,7 @@ namespace Mirror.Transports.Encryption
             {
                 PublicKeyFingerprint = PublicKeyFingerprint,
                 PublicKey = Convert.ToBase64String(PublicKeySerialized),
-                PrivateKey= Convert.ToBase64String(SerializePrivateKey(PrivateKey))
+                PrivateKey= Convert.ToBase64String(SerializePrivateKey(PrivateKey)),
             });
             File.WriteAllText(path, json);
         }
@@ -100,7 +104,9 @@ namespace Mirror.Transports.Encryption
             byte[] privateKeyBytes = Convert.FromBase64String(serializedPair.PrivateKey);
 
             if (serializedPair.PublicKeyFingerprint != PubKeyFingerprint(new ArraySegment<byte>(publicKeyBytes)))
+            {
                 throw new Exception("Saved public key fingerprint does not match public key.");
+            }
             return new EncryptionCredentials
             {
                 PublicKeySerialized = publicKeyBytes,
@@ -109,7 +115,7 @@ namespace Mirror.Transports.Encryption
             };
         }
 
-        class SerializedPair
+        private class SerializedPair
         {
             public string PublicKeyFingerprint;
             public string PublicKey;

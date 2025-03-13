@@ -6,7 +6,7 @@ namespace Mirror.Examples.Common.Controllers.Flyer
 {
     [AddComponentMenu("")]
     [DisallowMultipleComponent]
-    public class FlyerControllerUI : ControllerUIBase
+    public class FlyerControllerUI : ContollerUIBase
     {
         [Serializable]
         public struct MoveTexts

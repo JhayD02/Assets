@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Mirror.BouncyCastle.Crypto;
 using UnityEngine;
 using UnityEngine.Profiling;
 using UnityEngine.Serialization;
@@ -8,115 +7,91 @@ using UnityEngine.Serialization;
 namespace Mirror.Transports.Encryption
 {
     [HelpURL("https://mirror-networking.gitbook.io/docs/manual/transports/encryption-transport")]
-    public class EncryptionTransport : Transport, PortTransport
+    public class EncryptionTransport : Transport
     {
         public override bool IsEncrypted => true;
         public override string EncryptionCipher => "AES256-GCM";
-        [FormerlySerializedAs("inner")]
-        [HideInInspector]
-        public Transport Inner;
-
-        public ushort Port
-        {
-            get
-            {
-                if (Inner is PortTransport portTransport)
-                    return portTransport.Port;
-
-                Debug.LogError($"EncryptionTransport can't get Port because {Inner} is not a PortTransport");
-                return 0;
-            }
-            set
-            {
-                if (Inner is PortTransport portTransport)
-                {
-                    portTransport.Port = value;
-                    return;
-                }
-                Debug.LogError($"EncryptionTransport can't set Port because {Inner} is not a PortTransport");
-            }
-        }
+        public Transport inner;
 
         public enum ValidationMode
         {
             Off,
             List,
-            Callback
+            Callback,
         }
 
-        [FormerlySerializedAs("clientValidateServerPubKey")]
-        [HideInInspector]
-        public ValidationMode ClientValidateServerPubKey;
-        [FormerlySerializedAs("clientTrustedPubKeySignatures")]
-        [HideInInspector]
+        public ValidationMode clientValidateServerPubKey;
         [Tooltip("List of public key fingerprints the client will accept")]
-        public string[] ClientTrustedPubKeySignatures;
-        public Func<PubKeyInfo, bool> OnClientValidateServerPubKey;
-        [FormerlySerializedAs("serverLoadKeyPairFromFile")]
-        [HideInInspector]
-        public bool ServerLoadKeyPairFromFile;
-        [FormerlySerializedAs("serverKeypairPath")]
-        [HideInInspector]
-        public string ServerKeypairPath = "./server-keys.json";
+        public string[] clientTrustedPubKeySignatures;
+        public Func<PubKeyInfo, bool> onClientValidateServerPubKey;
+        public bool serverLoadKeyPairFromFile;
+        public string serverKeypairPath = "./server-keys.json";
 
-        EncryptedConnection client;
+        private EncryptedConnection _client;
 
-        readonly Dictionary<int, EncryptedConnection> serverConnections = new Dictionary<int, EncryptedConnection>();
+        private Dictionary<int, EncryptedConnection> _serverConnections = new Dictionary<int, EncryptedConnection>();
 
-        readonly List<EncryptedConnection> serverPendingConnections =
+        private List<EncryptedConnection> _serverPendingConnections =
             new List<EncryptedConnection>();
 
-        EncryptionCredentials credentials;
-        public string EncryptionPublicKeyFingerprint => credentials?.PublicKeyFingerprint;
-        public byte[] EncryptionPublicKey => credentials?.PublicKeySerialized;
+        private EncryptionCredentials _credentials;
+        public string EncryptionPublicKeyFingerprint => _credentials?.PublicKeyFingerprint;
+        public byte[] EncryptionPublicKey => _credentials?.PublicKeySerialized;
 
-        void ServerRemoveFromPending(EncryptedConnection con)
+        private void ServerRemoveFromPending(EncryptedConnection con)
         {
-            for (int i = 0; i < serverPendingConnections.Count; i++)
-                if (serverPendingConnections[i] == con)
+            for (int i = 0; i < _serverPendingConnections.Count; i++)
+            {
+                if (_serverPendingConnections[i] == con)
                 {
                     // remove by swapping with last
-                    int lastIndex = serverPendingConnections.Count - 1;
-                    serverPendingConnections[i] = serverPendingConnections[lastIndex];
-                    serverPendingConnections.RemoveAt(lastIndex);
+                    int lastIndex = _serverPendingConnections.Count - 1;
+                    _serverPendingConnections[i] = _serverPendingConnections[lastIndex];
+                    _serverPendingConnections.RemoveAt(lastIndex);
                     break;
                 }
+            }
         }
 
-        void HandleInnerServerDisconnected(int connId)
+        private void HandleInnerServerDisconnected(int connId)
         {
-            if (serverConnections.TryGetValue(connId, out EncryptedConnection con))
+            if (_serverConnections.TryGetValue(connId, out EncryptedConnection con))
             {
                 ServerRemoveFromPending(con);
-                serverConnections.Remove(connId);
+                _serverConnections.Remove(connId);
             }
             OnServerDisconnected?.Invoke(connId);
         }
 
-        void HandleInnerServerError(int connId, TransportError type, string msg) => OnServerError?.Invoke(connId, type, $"inner: {msg}");
-
-        void HandleInnerServerDataReceived(int connId, ArraySegment<byte> data, int channel)
+        private void HandleInnerServerError(int connId, TransportError type, string msg)
         {
-            if (serverConnections.TryGetValue(connId, out EncryptedConnection c))
-                c.OnReceiveRaw(data, channel);
+            OnServerError?.Invoke(connId, type, $"inner: {msg}");
         }
 
-        void HandleInnerServerConnected(int connId) => HandleInnerServerConnected(connId, Inner.ServerGetClientAddress(connId));
-
-        void HandleInnerServerConnected(int connId, string clientRemoteAddress)
+        private void HandleInnerServerDataReceived(int connId, ArraySegment<byte> data, int channel)
         {
-            Debug.Log($"[EncryptionTransport] New connection #{connId} from {clientRemoteAddress}");
+            if (_serverConnections.TryGetValue(connId, out EncryptedConnection c))
+            {
+                c.OnReceiveRaw(data, channel);
+            }
+        }
+
+        private void HandleInnerServerConnected(int connId) => HandleInnerServerConnected(connId, inner.ServerGetClientAddress(connId));
+
+        private void HandleInnerServerConnected(int connId, string clientRemoteAddress)
+        {
+            Debug.Log($"[EncryptionTransport] New connection #{connId}");
             EncryptedConnection ec = null;
             ec = new EncryptedConnection(
-                credentials,
+                _credentials,
                 false,
-                (segment, channel) => Inner.ServerSend(connId, segment, channel),
+                (segment, channel) => inner.ServerSend(connId, segment, channel),
                 (segment, channel) => OnServerDataReceived?.Invoke(connId, segment, channel),
                 () =>
                 {
                     Debug.Log($"[EncryptionTransport] Connection #{connId} is ready");
-                    // ReSharper disable once AccessToModifiedClosure
                     ServerRemoveFromPending(ec);
+                    //OnServerConnected?.Invoke(connId);
                     OnServerConnectedWithAddress?.Invoke(connId, clientRemoteAddress);
                 },
                 (type, msg) =>
@@ -124,25 +99,32 @@ namespace Mirror.Transports.Encryption
                     OnServerError?.Invoke(connId, type, msg);
                     ServerDisconnect(connId);
                 });
-            serverConnections.Add(connId, ec);
-            serverPendingConnections.Add(ec);
+            _serverConnections.Add(connId, ec);
+            _serverPendingConnections.Add(ec);
         }
 
-        void HandleInnerClientDisconnected()
+        private void HandleInnerClientDisconnected()
         {
-            client = null;
+            _client = null;
             OnClientDisconnected?.Invoke();
         }
 
-        void HandleInnerClientError(TransportError arg1, string arg2) => OnClientError?.Invoke(arg1, $"inner: {arg2}");
+        private void HandleInnerClientError(TransportError arg1, string arg2)
+        {
+            OnClientError?.Invoke(arg1, $"inner: {arg2}");
+        }
 
-        void HandleInnerClientDataReceived(ArraySegment<byte> data, int channel) => client?.OnReceiveRaw(data, channel);
+        private void HandleInnerClientDataReceived(ArraySegment<byte> data, int channel)
+        {
+            _client?.OnReceiveRaw(data, channel);
+        }
 
-        void HandleInnerClientConnected() =>
-            client = new EncryptedConnection(
-                credentials,
+        private void HandleInnerClientConnected()
+        {
+            _client = new EncryptedConnection(
+                _credentials,
                 true,
-                (segment, channel) => Inner.ClientSend(segment, channel),
+                (segment, channel) => inner.ClientSend(segment, channel),
                 (segment, channel) => OnClientDataReceived?.Invoke(segment, channel),
                 () =>
                 {
@@ -154,52 +136,42 @@ namespace Mirror.Transports.Encryption
                     ClientDisconnect();
                 },
                 HandleClientValidateServerPubKey);
+        }
 
-        bool HandleClientValidateServerPubKey(PubKeyInfo pubKeyInfo)
+        private bool HandleClientValidateServerPubKey(PubKeyInfo pubKeyInfo)
         {
-            switch (ClientValidateServerPubKey)
+            switch (clientValidateServerPubKey)
             {
                 case ValidationMode.Off:
                     return true;
                 case ValidationMode.List:
-                    return Array.IndexOf(ClientTrustedPubKeySignatures, pubKeyInfo.Fingerprint) >= 0;
+                    return Array.IndexOf(clientTrustedPubKeySignatures, pubKeyInfo.Fingerprint) >= 0;
                 case ValidationMode.Callback:
-                    return OnClientValidateServerPubKey(pubKeyInfo);
+                    return onClientValidateServerPubKey(pubKeyInfo);
                 default:
                     throw new ArgumentOutOfRangeException();
             }
         }
 
-        void Awake() =>
-            // check if encryption via hardware acceleration is supported.
-            // this can be useful to know for low end devices.
-            //
-            // hardware acceleration requires netcoreapp3.0 or later:
-            //   https://github.com/bcgit/bc-csharp/blob/449940429c57686a6fcf6bfbb4d368dec19d906e/crypto/src/crypto/AesUtilities.cs#L18
-            // because AesEngine_x86 requires System.Runtime.Intrinsics.X86:
-            //   https://github.com/bcgit/bc-csharp/blob/449940429c57686a6fcf6bfbb4d368dec19d906e/crypto/src/crypto/engines/AesEngine_X86.cs
-            // which Unity does not support yet.
-            Debug.Log($"EncryptionTransport: IsHardwareAccelerated={AesUtilities.IsHardwareAccelerated}");
+        public override bool Available() => inner.Available();
 
-        public override bool Available() => Inner.Available();
-
-        public override bool ClientConnected() => client != null && client.IsReady;
+        public override bool ClientConnected() => _client != null && _client.IsReady;
 
         public override void ClientConnect(string address)
         {
-            switch (ClientValidateServerPubKey)
+            switch (clientValidateServerPubKey)
             {
                 case ValidationMode.Off:
                     break;
                 case ValidationMode.List:
-                    if (ClientTrustedPubKeySignatures == null || ClientTrustedPubKeySignatures.Length == 0)
+                    if (clientTrustedPubKeySignatures == null || clientTrustedPubKeySignatures.Length == 0)
                     {
                         OnClientError?.Invoke(TransportError.Unexpected, "Validate Server Public Key is set to List, but the clientTrustedPubKeySignatures list is empty.");
                         return;
                     }
                     break;
                 case ValidationMode.Callback:
-                    if (OnClientValidateServerPubKey == null)
+                    if (onClientValidateServerPubKey == null)
                     {
                         OnClientError?.Invoke(TransportError.Unexpected, "Validate Server Public Key is set to Callback, but the onClientValidateServerPubKey handler is not set");
                         return;
@@ -208,82 +180,97 @@ namespace Mirror.Transports.Encryption
                 default:
                     throw new ArgumentOutOfRangeException();
             }
-            credentials = EncryptionCredentials.Generate();
-            Inner.OnClientConnected = HandleInnerClientConnected;
-            Inner.OnClientDataReceived = HandleInnerClientDataReceived;
-            Inner.OnClientDataSent = (bytes, channel) => OnClientDataSent?.Invoke(bytes, channel);
-            Inner.OnClientError = HandleInnerClientError;
-            Inner.OnClientDisconnected = HandleInnerClientDisconnected;
-            Inner.ClientConnect(address);
+            _credentials = EncryptionCredentials.Generate();
+            inner.OnClientConnected = HandleInnerClientConnected;
+            inner.OnClientDataReceived = HandleInnerClientDataReceived;
+            inner.OnClientDataSent = (bytes, channel) => OnClientDataSent?.Invoke(bytes, channel);
+            inner.OnClientError = HandleInnerClientError;
+            inner.OnClientDisconnected = HandleInnerClientDisconnected;
+            inner.ClientConnect(address);
         }
 
         public override void ClientSend(ArraySegment<byte> segment, int channelId = Channels.Reliable) =>
-            client?.Send(segment, channelId);
+            _client?.Send(segment, channelId);
 
-        public override void ClientDisconnect() => Inner.ClientDisconnect();
+        public override void ClientDisconnect() => inner.ClientDisconnect();
 
-        public override Uri ServerUri() => Inner.ServerUri();
+        public override Uri ServerUri() => inner.ServerUri();
 
-        public override bool ServerActive() => Inner.ServerActive();
+        public override bool ServerActive() => inner.ServerActive();
 
         public override void ServerStart()
         {
-            if (ServerLoadKeyPairFromFile)
-                credentials = EncryptionCredentials.LoadFromFile(ServerKeypairPath);
+            if (serverLoadKeyPairFromFile)
+            {
+                _credentials = EncryptionCredentials.LoadFromFile(serverKeypairPath);
+            }
             else
-                credentials = EncryptionCredentials.Generate();
+            {
+                _credentials = EncryptionCredentials.Generate();
+            }
 #pragma warning disable CS0618 // Type or member is obsolete
-            Inner.OnServerConnected = HandleInnerServerConnected;
+            inner.OnServerConnected = HandleInnerServerConnected;
 #pragma warning restore CS0618 // Type or member is obsolete
-            Inner.OnServerConnectedWithAddress = HandleInnerServerConnected;
-            Inner.OnServerDataReceived = HandleInnerServerDataReceived;
-            Inner.OnServerDataSent = (connId, bytes, channel) => OnServerDataSent?.Invoke(connId, bytes, channel);
-            Inner.OnServerError = HandleInnerServerError;
-            Inner.OnServerDisconnected = HandleInnerServerDisconnected;
-            Inner.ServerStart();
+            inner.OnServerConnectedWithAddress = HandleInnerServerConnected;
+            inner.OnServerDataReceived = HandleInnerServerDataReceived;
+            inner.OnServerDataSent = (connId, bytes, channel) => OnServerDataSent?.Invoke(connId, bytes, channel);
+            inner.OnServerError = HandleInnerServerError;
+            inner.OnServerDisconnected = HandleInnerServerDisconnected;
+            inner.ServerStart();
         }
 
         public override void ServerSend(int connectionId, ArraySegment<byte> segment, int channelId = Channels.Reliable)
         {
-            if (serverConnections.TryGetValue(connectionId, out EncryptedConnection connection) && connection.IsReady)
+            if (_serverConnections.TryGetValue(connectionId, out EncryptedConnection connection) && connection.IsReady)
+            {
                 connection.Send(segment, channelId);
+            }
         }
 
-        public override void ServerDisconnect(int connectionId) =>
+        public override void ServerDisconnect(int connectionId)
+        {
             // cleanup is done via inners disconnect event
-            Inner.ServerDisconnect(connectionId);
+            inner.ServerDisconnect(connectionId);
+        }
 
-        public override string ServerGetClientAddress(int connectionId) => Inner.ServerGetClientAddress(connectionId);
+        public override string ServerGetClientAddress(int connectionId) => inner.ServerGetClientAddress(connectionId);
 
-        public override void ServerStop() => Inner.ServerStop();
+        public override void ServerStop() => inner.ServerStop();
 
         public override int GetMaxPacketSize(int channelId = Channels.Reliable) =>
-            Inner.GetMaxPacketSize(channelId) - EncryptedConnection.Overhead;
+            inner.GetMaxPacketSize(channelId) - EncryptedConnection.Overhead;
 
-        public override int GetBatchThreshold(int channelId = Channels.Reliable) => Inner.GetBatchThreshold(channelId) - EncryptedConnection.Overhead;
+        public override void Shutdown() => inner.Shutdown();
 
-        public override void Shutdown() => Inner.Shutdown();
-
-        public override void ClientEarlyUpdate() => Inner.ClientEarlyUpdate();
+        public override void ClientEarlyUpdate()
+        {
+            inner.ClientEarlyUpdate();
+        }
 
         public override void ClientLateUpdate()
         {
-            Inner.ClientLateUpdate();
+            inner.ClientLateUpdate();
             Profiler.BeginSample("EncryptionTransport.ServerLateUpdate");
-            client?.TickNonReady(NetworkTime.localTime);
+            _client?.TickNonReady(NetworkTime.localTime);
             Profiler.EndSample();
         }
 
-        public override void ServerEarlyUpdate() => Inner.ServerEarlyUpdate();
+        public override void ServerEarlyUpdate()
+        {
+            inner.ServerEarlyUpdate();
+        }
 
         public override void ServerLateUpdate()
         {
-            Inner.ServerLateUpdate();
+            inner.ServerLateUpdate();
             Profiler.BeginSample("EncryptionTransport.ServerLateUpdate");
             // Reverse iteration as entries can be removed while updating
-            for (int i = serverPendingConnections.Count - 1; i >= 0; i--)
-                serverPendingConnections[i].TickNonReady(NetworkTime.time);
+            for (int i = _serverPendingConnections.Count - 1; i >= 0; i--)
+            {
+                _serverPendingConnections[i].TickNonReady(NetworkTime.time);
+            }
             Profiler.EndSample();
         }
     }
+
 }

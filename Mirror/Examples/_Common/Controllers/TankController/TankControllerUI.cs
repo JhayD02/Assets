@@ -6,7 +6,7 @@ namespace Mirror.Examples.Common.Controllers.Tank
 {
     [AddComponentMenu("")]
     [DisallowMultipleComponent]
-    public class TankControllerUI : ControllerUIBase
+    public class TankControllerUI : ContollerUIBase
     {
         [Serializable]
         public struct MoveTexts

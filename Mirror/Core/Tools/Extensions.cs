@@ -54,7 +54,7 @@ namespace Mirror
 
         // previously in DotnetCompatibility.cs
         // leftover from the UNET days. supposedly for windows store?
-        public static string GetMethodName(this Delegate func)
+        internal static string GetMethodName(this Delegate func)
         {
 #if NETFX_CORE
             return func.GetMethodInfo().Name;
@@ -113,18 +113,6 @@ namespace Mirror
         {
             transform.position = position;
             transform.rotation = rotation;
-        }
-
-        public static void GetLocalPositionAndRotation(this Transform transform, out Vector3 position, out Quaternion rotation)
-        {
-            position = transform.localPosition;
-            rotation = transform.localRotation;
-        }
-
-        public static void SetLocalPositionAndRotation(this Transform transform, Vector3 position, Quaternion rotation)
-        {
-            transform.localPosition = position;
-            transform.localRotation = rotation;
         }
 #endif
 
