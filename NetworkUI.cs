@@ -28,7 +28,6 @@ public class NetworkUI : NetworkManager
     private string hostIp = "127.0.0.1";
 
     private kcp2k.KcpTransport networkTransport;
-    private List<NetworkConnectionToClient> clients = new List<NetworkConnectionToClient>();
 
     void Start()
     {
@@ -110,7 +109,7 @@ public class NetworkUI : NetworkManager
 
     private void UpdateServerStatus(string ipAddress)
     {
-        serverStatusText.text = $"<b>Server Active</b>\nHost Port: {networkTransport.Port}\nHost IP: {ipAddress}";
+        serverStatusText.text = $"<b>Server Active</b>\nHost Port: {networkTransport.Port}\nHost IP: {hostIp}";
     }
 
     private void UpdateClientStatus()
@@ -123,7 +122,6 @@ public class NetworkUI : NetworkManager
         if (conn != null)
         {
             conn.Disconnect();
-            clients.Remove(conn);
             Debug.Log($"Kicked client: {conn.address}");
         }
     }
@@ -136,7 +134,6 @@ public class NetworkUI : NetworkManager
 
     public override void OnServerConnect(NetworkConnectionToClient conn)
     {
-        clients.Add(conn);
         base.OnServerConnect(conn);
         Debug.Log("Client Connected!");
     }
@@ -150,7 +147,6 @@ public class NetworkUI : NetworkManager
 
     public override void OnServerDisconnect(NetworkConnectionToClient conn)
     {
-        clients.Remove(conn);
         base.OnServerDisconnect(conn);
         Debug.Log("Client Disconnected!");
     }
