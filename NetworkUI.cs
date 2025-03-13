@@ -15,19 +15,17 @@ public class NetworkUI : NetworkManager
     [SerializeField] private GameObject serverActivePanel;
     [SerializeField] private GameObject clientActivePanel;
 
-    [SerializeField] private TMP_InputField hostPortInput;
+    [SerializeField] private GameObject StartPanel;
+
     [SerializeField] private TMP_InputField clientPortInput;
-    [SerializeField] private TMP_InputField hostIpInput;
-    [SerializeField] private TMP_InputField maxClientsInput;
+    [SerializeField] private TMP_InputField networkAddressInput;
 
     [SerializeField] private TMP_Text serverStatusText;
     [SerializeField] private TMP_Text clientStatusText;
-    [SerializeField] private Transform clientListContainer;
-    [SerializeField] private GameObject clientListItemPrefab; // Prefab for client UI
 
-    private ushort hostPort;
-    private int maxClients;
-    private string hostIp;
+    private ushort hostPort = 3000;
+    private int maxClients = 2;
+    private string hostIp = "127.0.0.1";
 
     private kcp2k.KcpTransport networkTransport;
     private List<NetworkConnectionToClient> clients = new List<NetworkConnectionToClient>();
@@ -36,8 +34,9 @@ public class NetworkUI : NetworkManager
     {
         networkTransport = GetComponent<kcp2k.KcpTransport>();
 
-        mainMenuPanel.SetActive(true);
+        mainMenuPanel.SetActive(false);
         hostPanel.SetActive(false);
+        StartPanel.SetActive(true);
         clientPanel.SetActive(false);
         serverActivePanel.SetActive(false);
         clientActivePanel.SetActive(false);
@@ -66,20 +65,15 @@ public class NetworkUI : NetworkManager
 
     public void StartHosting()
     {
-        if (ushort.TryParse(hostPortInput.text, out hostPort) && int.TryParse(maxClientsInput.text, out maxClients))
-        {
-            networkTransport.Port = hostPort;
-            maxConnections = maxClients;
-            StartHost();
+        networkTransport.Port = hostPort;
+        maxConnections = maxClients;
+        StartHost();
+        StartPanel.SetActive(false);
 
-            hostPanel.SetActive(false);
-            serverActivePanel.SetActive(true);
-            UpdateServerStatus();
-        }
-        else
-        {
-            Debug.LogWarning("Invalid Host Port or Max Clients Input!");
-        }
+        hostPanel.SetActive(false);
+        serverActivePanel.SetActive(true);
+
+        UpdateServerStatus(GetLocalIPAddress());
     }
 
     public void StartClientConnection()
@@ -87,7 +81,7 @@ public class NetworkUI : NetworkManager
         if (ushort.TryParse(clientPortInput.text, out hostPort))
         {
             networkTransport.Port = hostPort;
-            networkAddress = hostIpInput.text;
+            networkAddress = networkAddressInput.text;
             StartClient();
 
             clientPanel.SetActive(false);
@@ -114,40 +108,14 @@ public class NetworkUI : NetworkManager
         mainMenuPanel.SetActive(true);
     }
 
-    private void UpdateServerStatus()
+    private void UpdateServerStatus(string ipAddress)
     {
-        serverStatusText.text = $"<b>Server Active</b>\nHost Port: {networkTransport.Port}\nHost IP: {GetLocalIPAddress()}";
-        UpdateClientList();
+        serverStatusText.text = $"<b>Server Active</b>\nHost Port: {networkTransport.Port}\nHost IP: {ipAddress}";
     }
 
     private void UpdateClientStatus()
     {
-        
         clientStatusText.text = $"<b>Client Connected</b>\nHost Port: {networkTransport.Port}\nHost IP: {networkAddress}";
-    }
-
-    private void UpdateClientList()
-    {
-        foreach (Transform child in clientListContainer)
-        {
-            Destroy(child.gameObject);
-        }
-
-        int index = 0;
-        foreach (var conn in clients)
-        {
-            GameObject clientItem = Instantiate(clientListItemPrefab, clientListContainer);
-            TMP_Text clientText = clientItem.transform.Find("ClientText").GetComponent<TMP_Text>();
-            Button disconnectButton = clientItem.transform.Find("DisconnectButton").GetComponent<Button>();
-
-            clientText.text = conn.address;
-            disconnectButton.onClick.AddListener(() => KickClient(conn));
-
-            // Set local UI position inside the canvas
-            RectTransform itemRect = clientItem.GetComponent<RectTransform>();
-            itemRect.anchoredPosition = new Vector2(216, 253 - (index * 50)); // Adjust Y for spacing
-            index++;
-        }
     }
 
     public void KickClient(NetworkConnectionToClient conn)
@@ -156,7 +124,6 @@ public class NetworkUI : NetworkManager
         {
             conn.Disconnect();
             clients.Remove(conn);
-            UpdateClientList();
             Debug.Log($"Kicked client: {conn.address}");
         }
     }
@@ -171,7 +138,6 @@ public class NetworkUI : NetworkManager
     {
         clients.Add(conn);
         base.OnServerConnect(conn);
-        UpdateClientList();
         Debug.Log("Client Connected!");
     }
 
@@ -181,11 +147,11 @@ public class NetworkUI : NetworkManager
         Debug.Log("Disconnected from server. Returning to main menu.");
         BackToMainMenu();
     }
+
     public override void OnServerDisconnect(NetworkConnectionToClient conn)
     {
         clients.Remove(conn);
         base.OnServerDisconnect(conn);
-        UpdateClientList();
         Debug.Log("Client Disconnected!");
     }
 
