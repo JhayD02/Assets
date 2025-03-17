@@ -57,6 +57,7 @@ public class FlyingBehavior : MonoBehaviour
         {
             Patrol();
         }
+
     }
 
     void Patrol()
@@ -85,13 +86,13 @@ public class FlyingBehavior : MonoBehaviour
     {
         isAttacking = true;
         flyingAnim.setAttack2Trigger();
-        
-         Debug.Log("Attack triggered");
-
+    
         yield return new WaitUntil(() => flyingAnim.isAttack1());
-        GameObject fireball = Instantiate(FlamePrefab, FlameLoc.position, Quaternion.identity);
-        fireball.GetComponent<FireballScript>().SetTargetPosition(player.position);
-
+    if (player != null)
+        {
+            GameObject fireball = Instantiate(FlamePrefab, FlameLoc.position, Quaternion.identity);
+            fireball.GetComponent<FireballScript>().SetTargetPosition(player.position);
+        }
 
         yield return new WaitForSeconds(attackDelay);
         isAttacking = false;
@@ -101,8 +102,5 @@ public class FlyingBehavior : MonoBehaviour
     {
         playerInRange = inRange;
         player = playerTransform;
-        
     }
-
-
 }
