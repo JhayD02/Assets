@@ -34,6 +34,12 @@ public class NetworkUI : NetworkManager
     {
         networkTransport = GetComponent<kcp2k.KcpTransport>();
 
+        if (networkTransport == null)
+        {
+            Debug.LogError("KcpTransport component not found!");
+            return;
+        }
+
         mainMenuPanel.SetActive(false);
         hostPanel.SetActive(false);
         StartPanel.SetActive(true);
@@ -97,6 +103,7 @@ public class NetworkUI : NetworkManager
 
             if (IsValidIPAddress(networkAddress))
             {
+                Debug.Log($"Attempting to connect to {networkAddress}:{hostPort}");
                 StartClient();
                 clientPanel.SetActive(false);
                 clientActivePanel.SetActive(true);
