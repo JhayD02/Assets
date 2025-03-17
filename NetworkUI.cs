@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
@@ -93,16 +94,33 @@ public class NetworkUI : NetworkManager
         {
             networkTransport.Port = hostPort;
             networkAddress = networkAddressInput.text;
-            StartClient();
 
-            clientPanel.SetActive(false);
-            clientActivePanel.SetActive(true);
-            UpdateClientStatus();
+            if (IsValidIPAddress(networkAddress))
+            {
+                StartClient();
+                clientPanel.SetActive(false);
+                clientActivePanel.SetActive(true);
+                UpdateClientStatus();
+            }
+            else
+            {
+                Debug.LogError("Invalid network address!");
+            }
         }
         else
         {
             Debug.LogWarning("Invalid Host Port Input!");
         }
+    }
+
+    private bool IsValidIPAddress(string address)
+    {
+        if (string.IsNullOrEmpty(address))
+        {
+            return false;
+        }
+
+        return Uri.CheckHostName(address) != UriHostNameType.Unknown;
     }
 
     public void StopHosting()
