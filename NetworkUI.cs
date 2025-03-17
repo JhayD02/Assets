@@ -29,6 +29,10 @@ public class NetworkUI : NetworkManager
 
     private TelepathyTransport networkTransport;
 
+    [Header("Player Prefabs")]
+    [SerializeField] private GameObject playerPrefab1;
+    [SerializeField] private GameObject playerPrefab2;
+
     void Start()
     {
         networkTransport = GetComponent<TelepathyTransport>();
@@ -149,6 +153,18 @@ public class NetworkUI : NetworkManager
     {
         base.OnServerDisconnect(conn);
         Debug.Log("Client Disconnected!");
+    }
+
+    public override void OnServerAddPlayer(NetworkConnectionToClient conn)
+    {
+        // Choose which player prefab to use based on some condition
+        GameObject playerPrefab = (numPlayers % 2 == 0) ? playerPrefab1 : playerPrefab2;
+
+        // Instantiate the chosen player prefab
+        GameObject player = Instantiate(playerPrefab);
+
+        // Add the player to the connection
+        NetworkServer.AddPlayerForConnection(conn, player);
     }
 
     public string GetLocalIPAddress()
