@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
@@ -28,17 +27,11 @@ public class NetworkUI : NetworkManager
     private int maxClients = 2;
     private string hostIp = "127.0.0.1";
 
-    private kcp2k.KcpTransport networkTransport;
+    private TelepathyTransport networkTransport;
 
     void Start()
     {
-        networkTransport = GetComponent<kcp2k.KcpTransport>();
-
-        if (networkTransport == null)
-        {
-            Debug.LogError("KcpTransport component not found!");
-            return;
-        }
+        networkTransport = GetComponent<TelepathyTransport>();
 
         mainMenuPanel.SetActive(false);
         hostPanel.SetActive(false);
@@ -84,57 +77,20 @@ public class NetworkUI : NetworkManager
 
     public void StartClientConnection()
     {
-        if (clientPortInput == null)
-        {
-            Debug.LogError("clientPortInput is not assigned!");
-            return;
-        }
-
-        if (networkAddressInput == null)
-        {
-            Debug.LogError("networkAddressInput is not assigned!");
-            return;
-        }
-
         if (ushort.TryParse(clientPortInput.text, out hostPort))
         {
             networkTransport.Port = hostPort;
             networkAddress = networkAddressInput.text;
+            StartClient();
 
-            if (IsValidIPAddress(networkAddress))
-            {
-                Debug.Log($"Attempting to connect to {networkAddress}:{hostPort}");
-                try
-                {
-                    StartClient();
-                    clientPanel.SetActive(false);
-                    clientActivePanel.SetActive(true);
-                    UpdateClientStatus();
-                }
-                catch (SocketException ex)
-                {
-                    Debug.LogError($"SocketException: {ex.Message}");
-                }
-            }
-            else
-            {
-                Debug.LogError("Invalid network address!");
-            }
+            clientPanel.SetActive(false);
+            clientActivePanel.SetActive(true);
+            UpdateClientStatus();
         }
         else
         {
             Debug.LogWarning("Invalid Host Port Input!");
         }
-    }
-
-    private bool IsValidIPAddress(string address)
-    {
-        if (string.IsNullOrEmpty(address))
-        {
-            return false;
-        }
-
-        return Uri.CheckHostName(address) != UriHostNameType.Unknown;
     }
 
     public void StopHosting()

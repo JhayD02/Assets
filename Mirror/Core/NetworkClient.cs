@@ -1599,7 +1599,7 @@ namespace Mirror
         static void Broadcast()
         {
             // joined the world yet?
-            if (connection == null || !connection.isReady) return;
+            if (!connection.isReady) return;
 
             // nothing to do in host mode. server already knows the state.
             if (NetworkServer.active) return;
