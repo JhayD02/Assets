@@ -7,15 +7,18 @@ public class PlayerDetection : MonoBehaviour
     private MushroomBehavior mushroomBehavior;  
     private GoblinBehavior goblinBehavior;
     private SkeletonBehavior skeletonBehavior;
+    private FlyingBehavior flyingBehavior;
 
     void Start()
     {
         skeletonBehavior = GetComponentInParent<SkeletonBehavior>();
         mushroomBehavior = GetComponentInParent<MushroomBehavior>();
         goblinBehavior = GetComponentInParent<GoblinBehavior>();
+        flyingBehavior = GetComponentInParent<FlyingBehavior>();
     }
 
-    void OnTriggerEnter2D(Collider2D other){
+    void OnTriggerEnter2D(Collider2D other)
+    {
         if (other.CompareTag("Player"))
         {
             Debug.Log("Player entered detection range");
@@ -25,6 +28,8 @@ public class PlayerDetection : MonoBehaviour
                 skeletonBehavior.SetPlayerInRange(true, other.transform);
             if (mushroomBehavior != null)
                 mushroomBehavior.SetPlayerInRange(true, other.transform);
+            if (flyingBehavior != null)
+                flyingBehavior.SetPlayerInRange(true, other.transform);
         }
     }
 
@@ -39,6 +44,8 @@ public class PlayerDetection : MonoBehaviour
                 skeletonBehavior.SetPlayerInRange(false, null);
             if (mushroomBehavior != null)
                 mushroomBehavior.SetPlayerInRange(false, null);
+            if (flyingBehavior != null)
+                flyingBehavior.SetPlayerInRange(false, null);
         }
     }
 }

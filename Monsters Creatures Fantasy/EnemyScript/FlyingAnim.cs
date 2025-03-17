@@ -13,14 +13,14 @@ public class FlyingAnim : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-       if(Input.GetButtonDown("Fire1"))
-        {
-            Flyinganim.SetTrigger("Attack1");
-        }
-       if(Input.GetButtonDown("Fire2"))
-        {
-           Flyinganim.SetTrigger("Attack2");
-        }
+    //    if(Input.GetButtonDown("Fire1"))
+    //     {
+    //         Flyinganim.SetTrigger("Attack1");
+    //     }
+    //    if(Input.GetButtonDown("Fire2"))
+    //     {
+    //        Flyinganim.SetTrigger("Attack2");
+    //     }
     }
 
       public void setAttack1Trigger()
@@ -38,5 +38,11 @@ public class FlyingAnim : MonoBehaviour
     public void setDeathTrigger()
     {
         Flyinganim.SetTrigger("Death");
+    }
+
+
+    public bool isAttack1()
+    {
+        return Flyinganim.GetCurrentAnimatorStateInfo(0).IsName("Attack1");
     }
 }
