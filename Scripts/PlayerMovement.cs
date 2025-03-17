@@ -9,10 +9,14 @@ public class PlayerMovement : NetworkBehaviour
     public float jumpForce = 5f;
     public static bool isGrounded;
     private Rigidbody2D rb;
+    private Vector3 originalPosition; // Variable to store the original position
+    private Health health; // Reference to the Health script
 
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
+        originalPosition = transform.position; // Store the original position
+        health = GetComponent<Health>(); // Get the Health component
     }
 
     void Update()
@@ -52,19 +56,34 @@ public class PlayerMovement : NetworkBehaviour
 
     void OnCollisionEnter2D(Collision2D collision)
     {
+        if (!isLocalPlayer) return;
+
         if (collision.gameObject.CompareTag("Ground"))
         {
             Debug.Log("Player has touched the ground.");
             isGrounded = true;
         }
+        else if (collision.gameObject.CompareTag("SafetyNet"))
+        {
+            Debug.Log("Player has collided with the safety net.");
+            health.CmdTakeDamage(health.damageAmount); // Take damage when hitting the safety net
+            Respawn();
+        }
     }
 
     void OnCollisionExit2D(Collision2D collision)
     {
+        if (!isLocalPlayer) return;
+
         if (collision.gameObject.CompareTag("Ground"))
         {
             Debug.Log("Player has left the ground.");
             isGrounded = false;
         }
+    }
+
+    void Respawn()
+    {
+        transform.position = originalPosition; // Respawn the player to the original position
     }
 }

@@ -4,17 +4,15 @@ using UnityEngine;
 
 public class BulletScript : MonoBehaviour
 {
-    // Start is called before the first frame update
+    public float speed = 5f;
+    public float lifetime = 4f;
+    private Rigidbody2D rb;
+
     void Start()
     {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        transform.Translate(Vector2.right * 0.08f);
-        Destroy(gameObject, 4);
+        rb = GetComponent<Rigidbody2D>();
+        rb.velocity = transform.right * speed;
+        Destroy(gameObject, lifetime);
     }
 
     void OnCollisionEnter2D(Collision2D collision)
