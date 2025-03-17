@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: 797514525647263385}
   - component: {fileID: 2194867990182412863}
   m_Layer: 0
-  m_Name: box playter
+  m_Name: WHITE
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
