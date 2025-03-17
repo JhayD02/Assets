@@ -5,7 +5,6 @@ using TMPro; // Using TextMeshPro
 using UnityEngine.UI;
 using System.Net;
 using System.Net.Sockets;
-using UnityEngine.SceneManagement; // Add this line
 
 public class NetworkUI : NetworkManager
 {
@@ -19,6 +18,7 @@ public class NetworkUI : NetworkManager
     [SerializeField] private GameObject StartPanel;
 
     [SerializeField] private TMP_InputField clientPortInput;
+    [SerializeField] private TMP_InputField networkAddressInput;
 
     [SerializeField] private TMP_Text serverStatusText;
     [SerializeField] private TMP_Text clientStatusText;
@@ -67,30 +67,42 @@ public class NetworkUI : NetworkManager
         networkTransport.Port = hostPort;
         maxConnections = maxClients;
         StartHost();
-        // Host will load the game scene
-        SceneManager.LoadScene("GameScene");
+        StartPanel.SetActive(false);
+
+        hostPanel.SetActive(false);
+        serverActivePanel.SetActive(true);
+
+        UpdateServerStatus(GetLocalIPAddress());
     }
 
     public void StartClientConnection()
     {
+        if (clientPortInput == null)
+        {
+            Debug.LogError("clientPortInput is not assigned!");
+            return;
+        }
+
+        if (networkAddressInput == null)
+        {
+            Debug.LogError("networkAddressInput is not assigned!");
+            return;
+        }
+
         if (ushort.TryParse(clientPortInput.text, out hostPort))
         {
             networkTransport.Port = hostPort;
-            networkAddress = hostIp; // Use the default IP address
-            Debug.Log($"Attempting to connect to {networkAddress}:{hostPort}");
+            networkAddress = networkAddressInput.text;
             StartClient();
+
+            clientPanel.SetActive(false);
+            clientActivePanel.SetActive(true);
+            UpdateClientStatus();
         }
         else
         {
             Debug.LogWarning("Invalid Host Port Input!");
         }
-    }
-
-    public override void OnClientConnect()
-    {
-        base.OnClientConnect();
-        // Client will load the game scene upon successful connection
-        SceneManager.LoadScene("GameScene");
     }
 
     public void StopHosting()
@@ -162,10 +174,5 @@ public class NetworkUI : NetworkManager
             }
         }
         throw new System.Exception("No IPv4 address found!");
-    }
-
-    private void LoadScene(string sceneName)
-    {
-        SceneManager.LoadScene(sceneName);
     }
 }
