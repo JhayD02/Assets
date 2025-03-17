@@ -5,7 +5,7 @@ using UnityEngine;
 public class MushroomBehavior : MonoBehaviour
 {
     MushroomAnim mushroomAnim;
-    SpriteRenderer spriteRenderer;
+    SpriteRenderer spriteRenderer;  
 
 #region Detection
     Transform player;
