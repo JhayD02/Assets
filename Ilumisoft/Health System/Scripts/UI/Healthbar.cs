@@ -7,7 +7,7 @@ namespace Ilumisoft.HealthSystem.UI
     public class Healthbar : MonoBehaviour
     {
         [field:SerializeField]
-        public Health Health { get; set; }
+        public HealthComponent Health { get; set; }
 
         [SerializeField]
         Canvas canvas;
@@ -30,7 +30,7 @@ namespace Ilumisoft.HealthSystem.UI
         {
             if (Health == null)
             {
-                Health = GetComponentInParent<Health>();
+                Health = GetComponentInParent<HealthComponent>();
             }
         }
 
