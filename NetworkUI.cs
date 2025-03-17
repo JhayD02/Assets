@@ -27,11 +27,11 @@ public class NetworkUI : NetworkManager
     private int maxClients = 2;
     private string hostIp = "127.0.0.1";
 
-    private kcp2k.KcpTransport networkTransport;
+    private TelepathyTransport networkTransport;
 
     void Start()
     {
-        networkTransport = GetComponent<kcp2k.KcpTransport>();
+        networkTransport = GetComponent<TelepathyTransport>();
 
         mainMenuPanel.SetActive(false);
         hostPanel.SetActive(false);
