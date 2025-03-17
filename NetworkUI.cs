@@ -5,6 +5,7 @@ using TMPro; // Using TextMeshPro
 using UnityEngine.UI;
 using System.Net;
 using System.Net.Sockets;
+using UnityEngine.SceneManagement; // Add this line
 
 public class NetworkUI : NetworkManager
 {
@@ -18,7 +19,6 @@ public class NetworkUI : NetworkManager
     [SerializeField] private GameObject StartPanel;
 
     [SerializeField] private TMP_InputField clientPortInput;
-    [SerializeField] private TMP_InputField networkAddressInput;
 
     [SerializeField] private TMP_Text serverStatusText;
     [SerializeField] private TMP_Text clientStatusText;
@@ -67,12 +67,8 @@ public class NetworkUI : NetworkManager
         networkTransport.Port = hostPort;
         maxConnections = maxClients;
         StartHost();
-        StartPanel.SetActive(false);
-
-        hostPanel.SetActive(false);
-        serverActivePanel.SetActive(true);
-
-        UpdateServerStatus(GetLocalIPAddress());
+        // Host will load the game scene
+        SceneManager.LoadScene("GameScene");
     }
 
     public void StartClientConnection()
@@ -80,17 +76,21 @@ public class NetworkUI : NetworkManager
         if (ushort.TryParse(clientPortInput.text, out hostPort))
         {
             networkTransport.Port = hostPort;
-            networkAddress = networkAddressInput.text;
+            networkAddress = hostIp; // Use the default IP address
+            Debug.Log($"Attempting to connect to {networkAddress}:{hostPort}");
             StartClient();
-
-            clientPanel.SetActive(false);
-            clientActivePanel.SetActive(true);
-            UpdateClientStatus();
         }
         else
         {
             Debug.LogWarning("Invalid Host Port Input!");
         }
+    }
+
+    public override void OnClientConnect()
+    {
+        base.OnClientConnect();
+        // Client will load the game scene upon successful connection
+        SceneManager.LoadScene("GameScene");
     }
 
     public void StopHosting()
@@ -162,5 +162,10 @@ public class NetworkUI : NetworkManager
             }
         }
         throw new System.Exception("No IPv4 address found!");
+    }
+
+    private void LoadScene(string sceneName)
+    {
+        SceneManager.LoadScene(sceneName);
     }
 }
