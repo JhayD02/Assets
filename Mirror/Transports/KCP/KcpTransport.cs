@@ -18,7 +18,7 @@ namespace kcp2k
         // common
         [Header("Transport Configuration")]
         [FormerlySerializedAs("Port")]
-        public ushort port = 7777;
+        public ushort port = 3000;
         public ushort Port { get => port; set => port=value; }
         [Tooltip("DualMode listens to IPv6 and IPv4 simultaneously. Disable if the platform only supports IPv4.")]
         public bool DualMode = true;
