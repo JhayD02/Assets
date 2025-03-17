@@ -104,10 +104,17 @@ public class NetworkUI : NetworkManager
             if (IsValidIPAddress(networkAddress))
             {
                 Debug.Log($"Attempting to connect to {networkAddress}:{hostPort}");
-                StartClient();
-                clientPanel.SetActive(false);
-                clientActivePanel.SetActive(true);
-                UpdateClientStatus();
+                try
+                {
+                    StartClient();
+                    clientPanel.SetActive(false);
+                    clientActivePanel.SetActive(true);
+                    UpdateClientStatus();
+                }
+                catch (SocketException ex)
+                {
+                    Debug.LogError($"SocketException: {ex.Message}");
+                }
             }
             else
             {
