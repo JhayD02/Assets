@@ -2866,7 +2866,7 @@ GameObject:
   - component: {fileID: 692450841}
   m_Layer: 0
   m_Name: Checkpoint1
-  m_TagString: Untagged
+  m_TagString: Ground
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -4353,7 +4353,7 @@ GameObject:
   - component: {fileID: 760725783}
   m_Layer: 0
   m_Name: Player1 Spawn
-  m_TagString: Untagged
+  m_TagString: Ground
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -5378,7 +5378,7 @@ GameObject:
   - component: {fileID: 985363236}
   m_Layer: 0
   m_Name: Horizontal Tile
-  m_TagString: Untagged
+  m_TagString: Ground
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -6046,7 +6046,7 @@ GameObject:
   - component: {fileID: 1149248791}
   m_Layer: 0
   m_Name: Checkpoint2
-  m_TagString: Untagged
+  m_TagString: Ground
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -7363,7 +7363,7 @@ GameObject:
   - component: {fileID: 1190812547}
   m_Layer: 0
   m_Name: Player2 Spawn
-  m_TagString: Untagged
+  m_TagString: Ground
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -9744,7 +9744,7 @@ GameObject:
   - component: {fileID: 1545433901}
   m_Layer: 0
   m_Name: Tilemap
-  m_TagString: Untagged
+  m_TagString: Ground
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -17008,11 +17008,11 @@ MonoBehaviour:
   disconnectInactiveConnections: 0
   disconnectInactiveTimeout: 60
   authenticator: {fileID: 0}
-  playerPrefab: {fileID: 355411569091134508, guid: 96d3f7c5533df3a41939dcf44616220a, type: 3}
+  playerPrefab: {fileID: 8981776664140546622, guid: 27a4b0104f4a28545b1f3b0fc4d2c7e9, type: 3}
   autoCreatePlayer: 1
   playerSpawnMethod: 1
   spawnPrefabs:
-  - {fileID: 795339046816437289, guid: c1ef7977f1af30143ae7ff7d74699414, type: 3}
+  - {fileID: 8297945537399421238, guid: d66f64eeaec7bf2498f1895cfd44248b, type: 3}
   exceptionsDisconnect: 1
   snapshotSettings:
     bufferTimeMultiplier: 2
@@ -17038,8 +17038,8 @@ MonoBehaviour:
   networkAddressInput: {fileID: 206794723}
   serverStatusText: {fileID: 982371010}
   clientStatusText: {fileID: 1189078458}
-  playerPrefab1: {fileID: 795339046816437289, guid: c1ef7977f1af30143ae7ff7d74699414, type: 3}
-  playerPrefab2: {fileID: 355411569091134508, guid: 96d3f7c5533df3a41939dcf44616220a, type: 3}
+  playerPrefab1: {fileID: 8981776664140546622, guid: 27a4b0104f4a28545b1f3b0fc4d2c7e9, type: 3}
+  playerPrefab2: {fileID: 8297945537399421238, guid: d66f64eeaec7bf2498f1895cfd44248b, type: 3}
 --- !u!4 &1816506346
 Transform:
   m_ObjectHideFlags: 0
@@ -17090,7 +17090,7 @@ GameObject:
   - component: {fileID: 1849457816}
   m_Layer: 0
   m_Name: sTAGE
-  m_TagString: Untagged
+  m_TagString: Ground
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -17768,7 +17768,7 @@ GameObject:
   - component: {fileID: 2017566390}
   m_Layer: 0
   m_Name: Grid
-  m_TagString: Untagged
+  m_TagString: Ground
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

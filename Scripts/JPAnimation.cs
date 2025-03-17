@@ -1,9 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Mirror;
 
-public class JhayAnimation : NetworkBehaviour
+public class JPAnimation : MonoBehaviour
 {
     private Animator animator;
     [SerializeField] private GameObject hitbox;
@@ -17,45 +16,38 @@ public class JhayAnimation : NetworkBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (!isLocalPlayer) return;
-
         float horizontalInput = Input.GetAxisRaw("Horizontal");
-        animator.SetFloat("Walk", horizontalInput);
+        animator.SetFloat("JPWalk", horizontalInput);
 
         animator.SetBool("isGrounded", PlayerMovement.isGrounded);
 
         if (Input.GetKey(KeyCode.LeftShift) && horizontalInput != 0)
         {
-            animator.SetBool("Run", true);
+            animator.SetBool("JPRun", true);
         }
         else
         {
-            animator.SetBool("Run", false);
+            animator.SetBool("JPRun", false);
         }
 
         if (Input.GetKeyDown(KeyCode.Space) && PlayerMovement.isGrounded)
         {
-            animator.SetTrigger("Jump");
+            animator.SetTrigger("JPJump");
         }
 
         if (Input.GetButtonDown("Fire1"))
         {
-            animator.SetTrigger("Melee");
-        }
-        
-        if (Input.GetButtonDown("Fire2"))
-        {
-            animator.SetTrigger("Shoot");
+            animator.SetTrigger("JPMelee");
         }
 
         if (Input.GetKeyDown(KeyCode.H))
         {
-            animator.SetTrigger("Hit");
+            animator.SetTrigger("JPHit");
         }
 
         if (Input.GetKeyDown(KeyCode.G))
         {
-            animator.SetTrigger("Death");
+            animator.SetTrigger("JPDeath");
         }
     }
 
