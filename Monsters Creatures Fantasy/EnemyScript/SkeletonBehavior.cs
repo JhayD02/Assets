@@ -1,12 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Mirror;
 
-public class SkeletonBehavior : MonoBehaviour
+public class SkeletonBehavior : NetworkBehaviour
 {
     SkeletonAnim skeletonAnim;
     SpriteRenderer spriteRenderer;
     EnemyHealth enemyHealth;
+
     #region Hitbox
     public GameObject Attackpoint;
     public float attackradius;
@@ -21,15 +23,15 @@ public class SkeletonBehavior : MonoBehaviour
     public float attackRange = 2f;
     public float stopDistance = 2f;
     public float attackDelay = 2f;
-    bool isAttacking = false;
-    bool playerInRange = false;
-
+    [SyncVar] private bool isAttacking = false;
+    [SyncVar] private bool playerInRange = false;
     #endregion
-    #region  Movement
+
+    #region Movement
     bool checkDirectionX = true;
     float speed = .1f;
     public float distance = 10f;
-    int check =0;
+    int check = 0;
     #endregion
 
     void Start()
@@ -38,15 +40,17 @@ public class SkeletonBehavior : MonoBehaviour
         spriteRenderer = GetComponent<SpriteRenderer>();
         initialAttackPointLocalPosition = Attackpoint.transform.localPosition;
         enemyHealth = GetComponent<EnemyHealth>();
-
     }
 
     void Update()
     {
-        if(enemyHealth.isDead)
+        if (!isServer) return;
+
+        if (enemyHealth.isDead)
         {
             return;
         }
+
         if (playerInRange)
         {
             FollowPlayer();
@@ -70,15 +74,15 @@ public class SkeletonBehavior : MonoBehaviour
     {
         if (checkDirectionX)
         {
-            transform.Translate(Vector3.right * speed/4);
-            skeletonAnim.SetWalk(1f);
+            transform.Translate(Vector3.right * speed / 4);
+            skeletonAnim.RpcSetWalk(1f);
             spriteRenderer.flipX = false;
         }
         else
         {
-            transform.Translate(Vector3.left * speed/4);
-             skeletonAnim.SetWalk(-1f);
-             spriteRenderer.flipX = true;
+            transform.Translate(Vector3.left * speed / 4);
+            skeletonAnim.RpcSetWalk(-1f);
+            spriteRenderer.flipX = true;
         }
         if (transform.position.x > distance)
         {
@@ -87,10 +91,10 @@ public class SkeletonBehavior : MonoBehaviour
         else if (transform.position.x < -distance)
         {
             checkDirectionX = true;
-        } 
+        }
     }
 
-      void FollowPlayer()
+    void FollowPlayer()
     {
         float distanceToPlayer = Vector3.Distance(transform.position, player.position);
 
@@ -104,17 +108,17 @@ public class SkeletonBehavior : MonoBehaviour
             if (direction.x > 0)
             {
                 spriteRenderer.flipX = false;
-                skeletonAnim.SetWalk(1f);
+                skeletonAnim.RpcSetWalk(1f);
             }
             else
             {
                 spriteRenderer.flipX = true;
-                skeletonAnim.SetWalk(-1f);
+                skeletonAnim.RpcSetWalk(-1f);
             }
         }
         else
         {
-            skeletonAnim.SetWalk(0f); 
+            skeletonAnim.RpcSetWalk(0f);
         }
 
         if (distanceToPlayer <= attackRange && !isAttacking)
@@ -123,59 +127,67 @@ public class SkeletonBehavior : MonoBehaviour
         }
     }
 
+    [Server]
     IEnumerator Attack()
     {
         isAttacking = true;
         hasHitPlayer = false;
-        skeletonAnim.setAttack1Trigger();
+        skeletonAnim.RpcsetAttack1Trigger();
         yield return new WaitForSeconds(attackDelay);
         isAttacking = false;
     }
 
+    [Server]
     public void SetPlayerInRange(bool inRange, Transform playerTransform)
     {
         playerInRange = inRange;
         player = playerTransform;
     }
 
-public void attack()
-{
-    if (!skeletonAnim.IsInAttackAnimation() || isHitAnimationPlaying)
+    [Server]
+    public void AttackPlayer()
     {
-        hasHitPlayer = false; 
-        return;
-    }
-    
-    if (!hasHitPlayer && skeletonAnim.IsInAttackAnimation()) 
-    {
-        Collider2D[] players = Physics2D.OverlapCircleAll(Attackpoint.transform.position, attackradius);
-
-        foreach (Collider2D collider in players)
+        if (!skeletonAnim.IsInAttackAnimation() || isHitAnimationPlaying)
         {
-            if (collider.CompareTag(playerTag))
-            {
-                Debug.Log("hit player" + check);
-                hasHitPlayer = true;
-                check++;
+            hasHitPlayer = false;
+            return;
+        }
 
-                Health health = collider.GetComponent<Health>();
-                if (health != null)
+        if (!hasHitPlayer && skeletonAnim.IsInAttackAnimation())
+        {
+            Collider2D[] players = Physics2D.OverlapCircleAll(Attackpoint.transform.position, attackradius);
+
+            foreach (Collider2D collider in players)
+            {
+                if (collider.CompareTag(playerTag))
                 {
-                    Debug.Log("Player health before damage: " + health.CurrentHealth);
-                    health.TakeDamage(10); // Adjust the damage value as needed
-                    Debug.Log("Player health after damage: " + health.CurrentHealth);
+                    Debug.Log("hit player" + check);
+                    hasHitPlayer = true;
+                    check++;
+
+                    Health health = collider.GetComponent<Health>();
+                    if (health != null)
+                    {
+                        Debug.Log("Player health before damage: " + health.CurrentHealth);
+                        health.TakeDamage(10); // Adjust the damage value as needed
+                        Debug.Log("Player health after damage: " + health.CurrentHealth);
+                    }
+                    else
+                    {
+                        Debug.LogError("Player does not have a PlayerHealth component: " + collider.name);
+                    }
+                    break;
                 }
-                else
-                {
-                    Debug.LogError("Player does not have a PlayerHealth component: " + collider.name);
-                }
-                break;
             }
         }
     }
-}
 
-   private void OnDrawGizmos()
+    public void SetHitAnimationPlaying(bool isPlaying)
+    {
+        isHitAnimationPlaying = isPlaying;
+    }
+
+    private void OnDrawGizmos()
     {
         if (Attackpoint != null)
         {
@@ -183,8 +195,4 @@ public void attack()
             Gizmos.DrawWireSphere(Attackpoint.transform.position, attackradius);
         }
     }
-    public void SetHitAnimationPlaying(bool isPlaying)
-{
-    isHitAnimationPlaying = isPlaying;
-}
 }

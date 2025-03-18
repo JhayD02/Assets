@@ -1,8 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Mirror;
 
-public class FlyingAnim : MonoBehaviour
+public class FlyingAnim : NetworkBehaviour
 {
     Animator Flyinganim;
     void Start()
@@ -10,38 +11,31 @@ public class FlyingAnim : MonoBehaviour
         Flyinganim = GetComponent<Animator>();
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-    //    if(Input.GetButtonDown("Fire1"))
-    //     {
-    //         Flyinganim.SetTrigger("Attack1");
-    //     }
-    //    if(Input.GetButtonDown("Fire2"))
-    //     {
-    //        Flyinganim.SetTrigger("Attack2");
-    //     }
-    }
 
-      public void setAttack1Trigger()
+    [ClientRpc]
+      public void RpcsetAttack1Trigger()
     {
         Flyinganim.SetTrigger("Attack1");
     }
-    public void setAttack2Trigger()
+    [ClientRpc]
+    public void RpcsetAttack2Trigger()
     {
         Flyinganim.SetTrigger("Attack2");
     }   
-    public void sethitTrigger()
+    [ClientRpc]
+    public void RpcsethitTrigger()
     {
         Flyinganim.SetTrigger("Hit");
         GetComponent<FlyingBehavior>().SetHitAnimationPlaying(true);
     }
-    public void ResetHitAnimationFlag()
+    [ClientRpc]
+    public void RpcResetHitAnimationFlag()
     {
         // Assuming SkeletonBehavior is attached to the same GameObject
         GetComponent<FlyingBehavior>().SetHitAnimationPlaying(false);
     }
-    public void setDeathTrigger()
+    [ClientRpc]
+    public void RpcsetDeathTrigger()
     {
         Flyinganim.SetTrigger("Death");
     }

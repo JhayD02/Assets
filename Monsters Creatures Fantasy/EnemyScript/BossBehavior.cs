@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
 
-public class MushroomBehavior : NetworkBehaviour
+public class BossBehavior : NetworkBehaviour
 {
-    MushroomAnim mushroomAnim;
-    SpriteRenderer spriteRenderer;  
+    BossAnimation bossAnim;
+    SpriteRenderer spriteRenderer;
     EnemyHealth enemyHealth;
 
     #region Hitbox
@@ -14,23 +14,23 @@ public class MushroomBehavior : NetworkBehaviour
     public float attackradius;
     public string playerTag = "Player";
     private bool hasHitPlayer = false;
-    private bool isHitAnimationPlaying = false;
     private Vector3 initialAttackPointLocalPosition;
+    private bool isHitAnimationPlaying = false;
     #endregion
 
     #region Detection
     Transform player;
-    public float attackRange = 10f;
+    public float attackRange = 2f;
     public float stopDistance = 2f;
-    public float attackDelay = 2.5f;
-    [SyncVar] private bool isAttacking = false;
-    [SyncVar] private bool playerInRange = false;
+    public float attackDelay = 2f;
+    [SyncVar] bool isAttacking = false;
+    [SyncVar] bool playerInRange = false;
     int check = 0;
     #endregion
 
     void Start()
     {
-        mushroomAnim = GetComponent<MushroomAnim>();
+        bossAnim = GetComponent<BossAnimation>();
         spriteRenderer = GetComponent<SpriteRenderer>();
         initialAttackPointLocalPosition = Attackpoint.transform.localPosition;
         enemyHealth = GetComponent<EnemyHealth>();
@@ -38,7 +38,7 @@ public class MushroomBehavior : NetworkBehaviour
 
     void Update()
     {
-        if (!isServer) return;
+        if (!isServer) return; // Ensure only the server controls the boss
 
         if (enemyHealth.isDead)
         {
@@ -51,10 +51,10 @@ public class MushroomBehavior : NetworkBehaviour
 
             if (distanceToPlayer <= attackRange && !isAttacking)
             {
-                StartCoroutine(Attack());
+                StartCoroutine(AlternateAttacks());
             }
 
-            if (!mushroomAnim.isAttacking())
+            if (!bossAnim.IsAttacking())
             {
                 if (player.position.x > transform.position.x)
                 {
@@ -66,7 +66,7 @@ public class MushroomBehavior : NetworkBehaviour
                 }
             }
 
-            // This is just so the hitbox follows the direction of the sprite
+            // Sync hitbox direction
             if (spriteRenderer.flipX)
             {
                 Attackpoint.transform.localPosition = new Vector3(-Mathf.Abs(initialAttackPointLocalPosition.x), initialAttackPointLocalPosition.y, initialAttackPointLocalPosition.z);
@@ -76,18 +76,48 @@ public class MushroomBehavior : NetworkBehaviour
                 Attackpoint.transform.localPosition = new Vector3(Mathf.Abs(initialAttackPointLocalPosition.x), initialAttackPointLocalPosition.y, initialAttackPointLocalPosition.z);
             }
         }
+        else
+        {
+            isAttacking = false;
+        }
     }
 
+    private bool useAttack1 = true;
+
     [Server]
-    IEnumerator Attack()
+    IEnumerator AlternateAttacks()
     {
         isAttacking = true;
-        mushroomAnim.RpcsetAttack1Trigger();
+        hasHitPlayer = false;
+
+        if (useAttack1)
+        {
+            RpcSetAttack1Trigger();
+        }
+        else
+        {
+            RpcSetAttack2Trigger();
+        }
+
+        useAttack1 = !useAttack1;
+
         yield return new WaitForSeconds(attackDelay);
         isAttacking = false;
     }
 
-    [Command]
+    [ClientRpc]
+    void RpcSetAttack1Trigger()
+    {
+        bossAnim.RpcSetAttack1Trigger();
+    }
+
+    [ClientRpc]
+    void RpcSetAttack2Trigger()
+    {
+        bossAnim.RpcSetAttack2Trigger();
+    }
+
+    [Server]
     public void SetPlayerInRange(bool inRange, Transform playerTransform)
     {
         playerInRange = inRange;
@@ -95,36 +125,34 @@ public class MushroomBehavior : NetworkBehaviour
     }
 
     [Server]
-    public void AttackPlayer()
+    public void Attack()
     {
-        if (!mushroomAnim.IsInAttackAnimation() || isHitAnimationPlaying)
+        if (!bossAnim.IsInAttackAnimation() || isHitAnimationPlaying)
         {
-            hasHitPlayer = false; 
+            hasHitPlayer = false;
             return;
         }
-        
-        if (!hasHitPlayer && mushroomAnim.IsInAttackAnimation()) 
+
+        if (!hasHitPlayer && bossAnim.IsInAttackAnimation())
         {
             Collider2D[] players = Physics2D.OverlapCircleAll(Attackpoint.transform.position, attackradius);
-
             foreach (Collider2D collider in players)
             {
                 if (collider.CompareTag(playerTag))
                 {
-                    Debug.Log("hit player" + check);
                     hasHitPlayer = true;
-                    check++;
+                    Debug.Log("Collider detected: " + collider.name);
                     Health health = collider.GetComponent<Health>();
                     if (health != null)
                     {
-                        Debug.Log("Player health before damage: " + health.CurrentHealth);
-                        health.TakeDamage(10); // Adjust the damage value as needed
-                        Debug.Log("Player health after damage: " + health.CurrentHealth);
+                        health.TakeDamage(35);
+                        Debug.Log("Player hit: " + collider.name + ", Health after damage: " + health.CurrentHealth);
                     }
                     else
                     {
-                        Debug.LogError("Player does not have a PlayerHealth component: " + collider.name);
+                        Debug.LogError("Player does not have a Health component: " + collider.name);
                     }
+                    
                     break;
                 }
             }
@@ -134,23 +162,5 @@ public class MushroomBehavior : NetworkBehaviour
     public void SetHitAnimationPlaying(bool isPlaying)
     {
         isHitAnimationPlaying = isPlaying;
-    }
-
-    private void OnDrawGizmos()
-    {
-        if (Attackpoint != null)
-        {
-            Gizmos.color = Color.red;
-            Gizmos.DrawWireSphere(Attackpoint.transform.position, attackradius);
-        }
-    }
-
-    private void OnCollisionEnter2D(Collision2D collision)
-    {
-        if (collision.gameObject.CompareTag("Bullet"))
-        {
-            // Ignore bullet damage
-            Debug.Log("Mushroom enemy is immune to bullet damage.");
-        }
     }
 }

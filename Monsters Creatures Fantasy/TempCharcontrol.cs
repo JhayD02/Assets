@@ -80,6 +80,7 @@ public class TempCharcontrol : MonoBehaviour
                 if (enemyHealth != null)
                 {
                     enemyHealth.TakeDamage(damage);
+                    //enemyHealth.TakeDamage(bulletDamage, false); for bullet
                 }
                 else
                 {

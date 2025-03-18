@@ -1,8 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Mirror;
 
-public class SkeletonAnim : MonoBehaviour
+public class SkeletonAnim : NetworkBehaviour
 {
     Animator skeletonanim;
     void Start()
@@ -10,42 +11,42 @@ public class SkeletonAnim : MonoBehaviour
         skeletonanim = GetComponent<Animator>();
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        //  if(Input.GetButtonDown("Fire1"))
-        // {
-        //     skeletonanim.SetTrigger("Attack1");
-        // }
-        // if(Input.GetButtonDown("Fire2"))
-        // {
-        //     skeletonanim.SetTrigger("Attack2");
-        // }
-    }
-
-    public void SetWalk(float walk)
+[ClientRpc]
+    public void RpcSetWalk(float walk)
     {
         skeletonanim.SetFloat("Walk", walk);
     }
-    public void setAttack1Trigger()
+    [ClientRpc]
+    public void RpcsetAttack1Trigger()
     {
         skeletonanim.SetTrigger("Attack1");
     }
-    public void setAttack2Trigger()
+    [ClientRpc]
+    public void RpcsetAttack2Trigger()
     {
         skeletonanim.SetTrigger("Attack2");
     }   
-    public void sethitTrigger()
+    [ClientRpc]
+    public void RpcsetBossattackTrigger()
+    {
+        skeletonanim.SetTrigger("Bossattack");
+    }
+    [ClientRpc]
+    public void RpcsethitTrigger()
     {
         skeletonanim.SetTrigger("Hit");
         GetComponent<SkeletonBehavior>().SetHitAnimationPlaying(true);
+        GetComponent<BossBehavior>().SetHitAnimationPlaying(true);
     }
-    public void ResetHitAnimationFlag()
+    [ClientRpc]
+    public void RpcResetHitAnimationFlag()
     {
-        // Assuming SkeletonBehavior is attached to the same GameObject
         GetComponent<SkeletonBehavior>().SetHitAnimationPlaying(false);
+        GetComponent<BossBehavior>().SetHitAnimationPlaying(false);
+
     }
-    public void setDeathTrigger()
+    [ClientRpc]
+    public void RpcsetDeathTrigger()
     {
         skeletonanim.SetTrigger("Death");
     }
