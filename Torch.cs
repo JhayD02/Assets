@@ -2,34 +2,36 @@ using UnityEngine;
 
 public class Torch : MonoBehaviour
 {
-    public GameObject[] smokes; // Assign 5 smoke GameObjects in the Inspector
-    private static int torchesCollected = 0;
-    private static int totalTorches = 2; // Change this if needed
+    private static string firstPlayer = ""; // Stores who picked the first chest
+    private static int torchCollected = 0;
+    private static int totalChests = 2;
 
     void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.CompareTag("Player")) // Ensure only players can collect
+        if (other.CompareTag("Player")) // Ensure only players collect
         {
-            torchesCollected++;
-            Debug.Log(gameObject.name + " collected! Total: " + torchesCollected + "/" + totalTorches);
-
-            Destroy(gameObject); // Remove the torch
-
-            if (torchesCollected >= totalTorches)
+            if (firstPlayer == "") 
             {
-                RemoveSmoke();
+                firstPlayer = other.gameObject.name; // Set first player
+                Debug.Log(firstPlayer + " collected the first torch!");
             }
-        }
-    }
-
-    void RemoveSmoke()
-    {
-        Debug.Log("All torches collected! Removing smoke...");
-        foreach (GameObject smoke in smokes)
-        {
-            if (smoke != null)
+            else if (other.gameObject.name != firstPlayer) 
             {
-                smoke.SetActive(false); // Disable smoke
+                Debug.Log(other.gameObject.name + " collected the second torch!");
+            }
+            else
+            {
+                Debug.Log(other.gameObject.name + " cannot collect both torch!");
+                return; // Prevent same player from collecting both
+            }
+
+            torchCollected++;
+            Destroy(gameObject);
+
+            if (torchCollected >= totalChests)
+            {
+                Debug.Log("Both torchs collected! Proceeding...");
+                // Add logic here to open a door, trigger an event, etc.
             }
         }
     }
