@@ -10,7 +10,7 @@ public class PlayerMovement : NetworkBehaviour
     public static bool isGrounded;
     private Rigidbody2D rb;
     private Vector3 originalPosition; // Variable to store the original position
-    private Vector3 lastCheckpointPosition; // Variable to store the last checkpoint position
+    [SyncVar] private Vector3 lastCheckpointPosition; // Variable to store the last checkpoint position
     private Health health; // Reference to the Health script
 
     void Start()
@@ -104,9 +104,25 @@ public class PlayerMovement : NetworkBehaviour
         transform.position = lastCheckpointPosition; // Respawn the player to the last checkpoint position
     }
 
+    [Command]
+    public void CmdSetCheckpoint(Vector3 checkpointPosition)
+    {
+        lastCheckpointPosition = checkpointPosition; // Update the last checkpoint position on the server
+        RpcUpdateCheckpoint(checkpointPosition); // Update the last checkpoint position on all clients
+    }
+
+    [ClientRpc]
+    void RpcUpdateCheckpoint(Vector3 checkpointPosition)
+    {
+        lastCheckpointPosition = checkpointPosition; // Update the last checkpoint position on the client
+    }
+
     public void SetCheckpoint(Vector3 checkpointPosition)
     {
-        lastCheckpointPosition = checkpointPosition; // Update the last checkpoint position
+        if (isLocalPlayer)
+        {
+            CmdSetCheckpoint(checkpointPosition); // Send the checkpoint update to the server
+        }
     }
 
     private void SetCameraTarget()
