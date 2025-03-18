@@ -6,6 +6,15 @@ public class GoblinBehavior : MonoBehaviour
 {
     GoblinAnim goblinAnim;
     SpriteRenderer spriteRenderer;
+    EnemyHealth enemyHealth;
+    #region Hitbox
+    public GameObject Attackpoint;
+    public float attackradius;
+    public string playerTag = "Player";
+    private bool hasHitPlayer = false;
+
+    private Vector3 initialAttackPointLocalPosition;
+    #endregion
     #region Detection
      Transform player;
     public float attackRange = 2f;
@@ -24,10 +33,17 @@ public class GoblinBehavior : MonoBehaviour
     {
         goblinAnim = GetComponent<GoblinAnim>();
         spriteRenderer = GetComponent<SpriteRenderer>();
+        initialAttackPointLocalPosition = Attackpoint.transform.localPosition;
+        enemyHealth = GetComponent<EnemyHealth>();
+
     }
 
     void Update()
     {
+        if(enemyHealth.isDead)
+        {
+            return;
+        }
         if (playerInRange)
         {
             FollowPlayer();
@@ -35,6 +51,14 @@ public class GoblinBehavior : MonoBehaviour
         else
         {
             Patrol();
+        }
+        if (spriteRenderer.flipX)
+        {
+            Attackpoint.transform.localPosition = new Vector3(-Mathf.Abs(initialAttackPointLocalPosition.x), initialAttackPointLocalPosition.y, initialAttackPointLocalPosition.z);
+        }
+        else
+        {
+            Attackpoint.transform.localPosition = new Vector3(Mathf.Abs(initialAttackPointLocalPosition.x), initialAttackPointLocalPosition.y, initialAttackPointLocalPosition.z);
         }
     }
 
@@ -98,6 +122,7 @@ public class GoblinBehavior : MonoBehaviour
     IEnumerator Attack()
     {
         isAttacking = true;
+        hasHitPlayer = false;
         goblinAnim.setAttack1Trigger();
         yield return new WaitForSeconds(attackDelay);
         isAttacking = false;
@@ -107,5 +132,31 @@ public class GoblinBehavior : MonoBehaviour
     {
         playerInRange = inRange;
         player = playerTransform;
+    }
+
+        public void attack()
+    {
+        if (!hasHitPlayer) 
+        {
+            Collider2D[] players = Physics2D.OverlapCircleAll(Attackpoint.transform.position, attackradius);
+
+            foreach (Collider2D collider in players)
+            {
+                if (collider.CompareTag(playerTag))
+                {
+                    Debug.Log("hit player");
+                    hasHitPlayer = true; 
+                    break; 
+                }
+            }
+        }
+    }
+       private void OnDrawGizmos()
+    {
+        if (Attackpoint != null)
+        {
+            Gizmos.color = Color.red;
+            Gizmos.DrawWireSphere(Attackpoint.transform.position, attackradius);
+        }
     }
 }

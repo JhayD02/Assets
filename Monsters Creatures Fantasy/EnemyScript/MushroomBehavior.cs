@@ -6,7 +6,15 @@ public class MushroomBehavior : MonoBehaviour
 {
     MushroomAnim mushroomAnim;
     SpriteRenderer spriteRenderer;  
+    EnemyHealth enemyHealth;
+#region Hitbox
+    public GameObject Attackpoint;
+    public float attackradius;
+    public string playerTag = "Player";
+    private bool hasHitPlayer = false;
 
+    private Vector3 initialAttackPointLocalPosition;
+#endregion
 #region Detection
     Transform player;
      public float attackRange = 10f;
@@ -19,11 +27,19 @@ public class MushroomBehavior : MonoBehaviour
     {
         mushroomAnim = GetComponent<MushroomAnim>();
         spriteRenderer = GetComponent<SpriteRenderer>();
+        initialAttackPointLocalPosition = Attackpoint.transform.localPosition;
+        enemyHealth = GetComponent<EnemyHealth>();
+
+
     }
 
     // Update is called once per frame
     void Update()
     {
+    if(enemyHealth.isDead)
+    {
+        return;
+    }
    if (playerInRange)
     {
         float distanceToPlayer = Vector3.Distance(transform.position, player.position);
@@ -43,7 +59,15 @@ public class MushroomBehavior : MonoBehaviour
                     spriteRenderer.flipX = true;
                 }
             }
-
+        //This is just so the hitbox follows the direction of the sprite
+        if (spriteRenderer.flipX)
+        {
+            Attackpoint.transform.localPosition = new Vector3(-Mathf.Abs(initialAttackPointLocalPosition.x), initialAttackPointLocalPosition.y, initialAttackPointLocalPosition.z);
+        }
+        else
+        {
+            Attackpoint.transform.localPosition = new Vector3(Mathf.Abs(initialAttackPointLocalPosition.x), initialAttackPointLocalPosition.y, initialAttackPointLocalPosition.z);
+        }
     }
 
     }
@@ -61,6 +85,30 @@ public class MushroomBehavior : MonoBehaviour
         playerInRange = inRange;
         player = playerTransform;
     }
- 
+       public void attack()
+    {
+        if (!hasHitPlayer) 
+        {
+            Collider2D[] players = Physics2D.OverlapCircleAll(Attackpoint.transform.position, attackradius);
+
+            foreach (Collider2D collider in players)
+            {
+                if (collider.CompareTag(playerTag))
+                {
+                    Debug.Log("hit player");
+                    hasHitPlayer = true; 
+                    break; 
+                }
+            }
+        }
+    }
+       private void OnDrawGizmos()
+    {
+        if (Attackpoint != null)
+        {
+            Gizmos.color = Color.red;
+            Gizmos.DrawWireSphere(Attackpoint.transform.position, attackradius);
+        }
+    }
     
 }

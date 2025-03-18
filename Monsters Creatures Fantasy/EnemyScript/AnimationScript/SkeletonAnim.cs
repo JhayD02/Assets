@@ -13,14 +13,14 @@ public class SkeletonAnim : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-         if(Input.GetButtonDown("Fire1"))
-        {
-            skeletonanim.SetTrigger("Attack1");
-        }
-        if(Input.GetButtonDown("Fire2"))
-        {
-            skeletonanim.SetTrigger("Attack2");
-        }
+        //  if(Input.GetButtonDown("Fire1"))
+        // {
+        //     skeletonanim.SetTrigger("Attack1");
+        // }
+        // if(Input.GetButtonDown("Fire2"))
+        // {
+        //     skeletonanim.SetTrigger("Attack2");
+        // }
     }
 
     public void SetWalk(float walk)

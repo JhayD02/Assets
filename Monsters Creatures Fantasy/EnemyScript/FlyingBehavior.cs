@@ -6,6 +6,7 @@ public class FlyingBehavior : MonoBehaviour
 {
     FlyingAnim flyingAnim;
     SpriteRenderer spriteRenderer;
+    EnemyHealth enemyHealth;
 
     #region Movement
     bool checkDirectionX = true;
@@ -31,11 +32,17 @@ public class FlyingBehavior : MonoBehaviour
     {
         flyingAnim = GetComponent<FlyingAnim>();
         spriteRenderer = GetComponent<SpriteRenderer>();
+        enemyHealth = GetComponent<EnemyHealth>();
+
     }
 
     // Update is called once per frame
     void Update()
     {
+        if(enemyHealth.isDead)
+        {
+            return;
+        }
         if (playerInRange)
         {
             if (!isAttacking)
