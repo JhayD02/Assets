@@ -10,6 +10,7 @@ public class PlayerMovement : NetworkBehaviour
     public static bool isGrounded;
     private Rigidbody2D rb;
     private Vector3 originalPosition; // Variable to store the original position
+    public Health health; // Reference to the Health script
 
     void Start()
     {
@@ -66,6 +67,11 @@ public class PlayerMovement : NetworkBehaviour
         {
             Debug.Log("Player has collided with the safety net.");
             Respawn();
+        }
+        else if (collision.gameObject.CompareTag("Enemy"))
+        {
+            Debug.Log("Player has collided with an enemy.");
+            health.TakeDamage(10); // Take damage when colliding with an enemy
         }
     }
 
