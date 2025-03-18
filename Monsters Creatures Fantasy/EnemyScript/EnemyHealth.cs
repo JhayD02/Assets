@@ -31,28 +31,12 @@ public class EnemyHealth : NetworkBehaviour
         }
     }
 
-    void Update()
-    {
-        if (isDead) return;
-
-        if (currentHealth < health && currentHealth > 0 && !hitTriggered)
-        {
-            // JUST TO PLAY ANIMATION
-            Debug.Log("Enemy hit, triggering animations");
-            if (GoblinAnim != null) GoblinAnim.RpcsethitTrigger();
-            if (SkeletonAnim != null) SkeletonAnim.RpcsethitTrigger();
-            if (FlyingAnim != null) FlyingAnim.RpcsethitTrigger();
-            if (MushroomAnim != null) MushroomAnim.RpcsethitTrigger();
-            if (bossAnim != null) bossAnim.RpcSetHitTrigger();
-            hitTriggered = true; // Set the flag to true after triggering the hit animation
-        }
-    }
-
     [Server]
     public void TakeDamage(float damage, bool triggerHitAnimation = true)
     {
         if (isDead) return;
 
+        float oldHealth = currentHealth;
         currentHealth -= damage;
 
         if (healthBar != null)
@@ -66,15 +50,19 @@ public class EnemyHealth : NetworkBehaviour
             isDead = true;
             RpcHandleDeath();
         }
-        else if (triggerHitAnimation && currentHealth < health)
+        else if (triggerHitAnimation && !hitTriggered) // Only trigger if not already hit
         {
+            hitTriggered = true;
             RpcHandleHit();
+            StartCoroutine(ResetHitTrigger()); // Reset hit trigger after a short delay
         }
     }
 
     [ClientRpc]
     void RpcHandleHit()
     {
+        if (isDead) return; // Prevent hit animation if already dead
+
         // JUST TO PLAY ANIMATION
         Debug.Log("Enemy hit, triggering animations");
         if (GoblinAnim != null) GoblinAnim.RpcsethitTrigger();
@@ -82,7 +70,6 @@ public class EnemyHealth : NetworkBehaviour
         if (FlyingAnim != null) FlyingAnim.RpcsethitTrigger();
         if (MushroomAnim != null) MushroomAnim.RpcsethitTrigger();
         if (bossAnim != null) bossAnim.RpcSetHitTrigger();
-        hitTriggered = false; // Reset the flag after handling the hit
     }
 
     [ClientRpc]
@@ -93,8 +80,9 @@ public class EnemyHealth : NetworkBehaviour
         if (FlyingAnim != null) FlyingAnim.RpcsetDeathTrigger();
         if (MushroomAnim != null) MushroomAnim.RpcsetDeathTrigger();
         if (bossAnim != null) bossAnim.RpcSetDeathTrigger();
-        Destroy(gameObject, 1f);
+        
         Debug.Log("Enemy is dead");
+        Destroy(gameObject, 1f);
     }
 
     void OnHealthChanged(float oldHealth, float newHealth)
@@ -104,5 +92,11 @@ public class EnemyHealth : NetworkBehaviour
             Debug.Log($"Health changed: {oldHealth} -> {newHealth}");
             healthBar.UpdateHealthBar(newHealth, health);
         }
+    }
+
+    private IEnumerator ResetHitTrigger()
+    {
+        yield return new WaitForSeconds(0.5f); // Adjust delay as needed
+        hitTriggered = false;
     }
 }
