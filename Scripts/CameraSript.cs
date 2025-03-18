@@ -8,9 +8,9 @@ public class CameraSript : NetworkBehaviour
     public Vector3 offset;
     public List<Transform> targets = new List<Transform>();
     public float smoothTime = .5f;
-    public float minZoom = 40;
+    public float minZoom = 30;
     public float maxZoom = 10;
-    public float zoomLimiter = 50;
+    public float zoomLimiter = 40;
 
     public Camera cam;
     private Vector3 velocity;
