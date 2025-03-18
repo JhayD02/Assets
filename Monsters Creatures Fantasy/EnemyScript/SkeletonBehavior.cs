@@ -13,6 +13,7 @@ public class SkeletonBehavior : MonoBehaviour
     public string playerTag = "Player";
     private bool hasHitPlayer = false;
     private Vector3 initialAttackPointLocalPosition;
+    private bool isHitAnimationPlaying = false;
     #endregion
 
     #region Detection
@@ -28,6 +29,7 @@ public class SkeletonBehavior : MonoBehaviour
     bool checkDirectionX = true;
     float speed = .1f;
     public float distance = 10f;
+    int check =0;
     #endregion
 
     void Start()
@@ -136,23 +138,30 @@ public class SkeletonBehavior : MonoBehaviour
         player = playerTransform;
     }
 
-    public void attack()
+public void attack()
+{
+    if (!skeletonAnim.IsInAttackAnimation() || isHitAnimationPlaying)
     {
-        if (!hasHitPlayer) 
-        {
-            Collider2D[] players = Physics2D.OverlapCircleAll(Attackpoint.transform.position, attackradius);
+        hasHitPlayer = false; 
+        return;
+    }
+    
+    if (!hasHitPlayer && skeletonAnim.IsInAttackAnimation()) 
+    {
+        Collider2D[] players = Physics2D.OverlapCircleAll(Attackpoint.transform.position, attackradius);
 
-            foreach (Collider2D collider in players)
+        foreach (Collider2D collider in players)
+        {
+            if (collider.CompareTag(playerTag))
             {
-                if (collider.CompareTag(playerTag))
-                {
-                    Debug.Log("hit player");
-                    hasHitPlayer = true; 
-                    break; 
-                }
+                Debug.Log("hit player" + check);
+                hasHitPlayer = true;
+                check++;
+                break;
             }
         }
     }
+}
 
    private void OnDrawGizmos()
     {
@@ -162,4 +171,8 @@ public class SkeletonBehavior : MonoBehaviour
             Gizmos.DrawWireSphere(Attackpoint.transform.position, attackradius);
         }
     }
+    public void SetHitAnimationPlaying(bool isPlaying)
+{
+    isHitAnimationPlaying = isPlaying;
+}
 }

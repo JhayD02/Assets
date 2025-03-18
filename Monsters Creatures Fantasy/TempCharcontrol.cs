@@ -7,7 +7,7 @@ public class TempCharcontrol : MonoBehaviour
     private float sprintSpeed;
     public float jumpForce = 5f;
     public static bool isGrounded;
-    int damage = 10;
+    int damage = 5;
     private Rigidbody2D rb;
     private Vector3 originalPosition;
 
@@ -63,6 +63,12 @@ public class TempCharcontrol : MonoBehaviour
 
     void Attack()
     {
+        if (attackPoint == null)
+        {
+            Debug.LogError("Attack point is not set.");
+            return;
+        }
+
         Collider2D[] hitEnemies = Physics2D.OverlapCircleAll(attackPoint.position, attackRadius);
 
         foreach (Collider2D enemy in hitEnemies)
@@ -70,7 +76,15 @@ public class TempCharcontrol : MonoBehaviour
             if (enemy.CompareTag("Enemy"))
             {
                 Debug.Log("Hit " + enemy.name);
-                enemy.GetComponent<EnemyHealth>().TakeDamage(damage);
+                EnemyHealth enemyHealth = enemy.GetComponent<EnemyHealth>();
+                if (enemyHealth != null)
+                {
+                    enemyHealth.TakeDamage(damage);
+                }
+                else
+                {
+                    Debug.LogError("Enemy does not have an EnemyHealth component: " + enemy.name);
+                }
             }
         }
     }

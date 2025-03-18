@@ -38,9 +38,25 @@ public class GoblinAnim : MonoBehaviour
     public void sethitTrigger()
     {
         Goblinanim.SetTrigger("Hit");
+        GetComponent<GoblinBehavior>().SetHitAnimationPlaying(true);
+    }
+    public void ResetHitAnimationFlag()
+    {
+        // Assuming SkeletonBehavior is attached to the same GameObject
+        GetComponent<GoblinBehavior>().SetHitAnimationPlaying(false);
     }
     public void setDeathTrigger()
     {
         Goblinanim.SetTrigger("Death");
+    }
+
+    
+    public bool IsInAttackAnimation()
+    {
+        return Goblinanim.GetCurrentAnimatorStateInfo(0).IsName("Attack1") || Goblinanim.GetCurrentAnimatorStateInfo(0).IsName("Attack2");
+    }
+    public bool IsInHitAnimation()
+    {
+        return Goblinanim.GetCurrentAnimatorStateInfo(0).IsName("Hit");
     }
 }

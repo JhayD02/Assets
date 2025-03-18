@@ -12,6 +12,7 @@ public class FlyingBehavior : MonoBehaviour
     bool checkDirectionX = true;
     float speed = .1f;
     public float distance = 10f;
+    private bool isHitAnimationPlaying = false;
     #endregion
     
     #region Detection
@@ -21,18 +22,25 @@ public class FlyingBehavior : MonoBehaviour
     public float attackDelay = 2f;
     bool isAttacking = false;
     bool playerInRange = false;
+    int check = 0;
     #endregion
-
+    int checker = 0;
     [SerializeField]
     Transform FlameLoc;
     [SerializeField]
     GameObject FlamePrefab;
+
 
     void Start()
     {
         flyingAnim = GetComponent<FlyingAnim>();
         spriteRenderer = GetComponent<SpriteRenderer>();
         enemyHealth = GetComponent<EnemyHealth>();
+
+         if (enemyHealth == null)
+        {
+            Debug.LogError("EnemyHealth component not found on flying enemy: " + gameObject.name);
+        }
 
     }
 
@@ -50,7 +58,6 @@ public class FlyingBehavior : MonoBehaviour
                 StartCoroutine(Attack());
             }
 
-            // Update sprite direction based on player's position
             if (player.position.x > transform.position.x)
             {
                 spriteRenderer.flipX = false;
@@ -109,5 +116,9 @@ public class FlyingBehavior : MonoBehaviour
     {
         playerInRange = inRange;
         player = playerTransform;
+    }
+        public void SetHitAnimationPlaying(bool isPlaying)
+    {
+        isHitAnimationPlaying = isPlaying;
     }
 }

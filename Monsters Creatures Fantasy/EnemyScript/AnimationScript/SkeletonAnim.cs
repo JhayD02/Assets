@@ -38,9 +38,23 @@ public class SkeletonAnim : MonoBehaviour
     public void sethitTrigger()
     {
         skeletonanim.SetTrigger("Hit");
+        GetComponent<SkeletonBehavior>().SetHitAnimationPlaying(true);
+    }
+    public void ResetHitAnimationFlag()
+    {
+        // Assuming SkeletonBehavior is attached to the same GameObject
+        GetComponent<SkeletonBehavior>().SetHitAnimationPlaying(false);
     }
     public void setDeathTrigger()
     {
         skeletonanim.SetTrigger("Death");
+    }
+    public bool IsInAttackAnimation()
+    {
+        return skeletonanim.GetCurrentAnimatorStateInfo(0).IsName("Attack1") || skeletonanim.GetCurrentAnimatorStateInfo(0).IsName("Attack2");
+    }
+    public bool IsInHitAnimation()
+    {
+        return skeletonanim.GetCurrentAnimatorStateInfo(0).IsName("Hit");
     }
 }

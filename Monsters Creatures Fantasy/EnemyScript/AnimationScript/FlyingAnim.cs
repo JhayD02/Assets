@@ -34,6 +34,12 @@ public class FlyingAnim : MonoBehaviour
     public void sethitTrigger()
     {
         Flyinganim.SetTrigger("Hit");
+        GetComponent<FlyingBehavior>().SetHitAnimationPlaying(true);
+    }
+    public void ResetHitAnimationFlag()
+    {
+        // Assuming SkeletonBehavior is attached to the same GameObject
+        GetComponent<FlyingBehavior>().SetHitAnimationPlaying(false);
     }
     public void setDeathTrigger()
     {
@@ -44,5 +50,13 @@ public class FlyingAnim : MonoBehaviour
     public bool isAttack1()
     {
         return Flyinganim.GetCurrentAnimatorStateInfo(0).IsName("Attack1");
+    }
+        public bool IsInAttackAnimation()
+    {
+        return Flyinganim.GetCurrentAnimatorStateInfo(0).IsName("Attack1") || Flyinganim.GetCurrentAnimatorStateInfo(0).IsName("Attack2");
+    }
+    public bool IsInHitAnimation()
+    {
+        return Flyinganim.GetCurrentAnimatorStateInfo(0).IsName("Hit");
     }
 }

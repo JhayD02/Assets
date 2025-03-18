@@ -12,7 +12,7 @@ public class GoblinBehavior : MonoBehaviour
     public float attackradius;
     public string playerTag = "Player";
     private bool hasHitPlayer = false;
-
+    private bool isHitAnimationPlaying = false;
     private Vector3 initialAttackPointLocalPosition;
     #endregion
     #region Detection
@@ -27,7 +27,7 @@ public class GoblinBehavior : MonoBehaviour
     bool checkDirectionX = true;
     float speed = .1f;
     public float distance = 10f;
-
+    int check = 0;
     #endregion
     void Start()
     {
@@ -134,23 +134,34 @@ public class GoblinBehavior : MonoBehaviour
         player = playerTransform;
     }
 
-        public void attack()
+public void attack()
+{
+    if (!goblinAnim.IsInAttackAnimation() || isHitAnimationPlaying)
     {
-        if (!hasHitPlayer) 
-        {
-            Collider2D[] players = Physics2D.OverlapCircleAll(Attackpoint.transform.position, attackradius);
+        hasHitPlayer = false; 
+        return;
+    }
+    
+    if (!hasHitPlayer && goblinAnim.IsInAttackAnimation()) 
+    {
+        Collider2D[] players = Physics2D.OverlapCircleAll(Attackpoint.transform.position, attackradius);
 
-            foreach (Collider2D collider in players)
+        foreach (Collider2D collider in players)
+        {
+            if (collider.CompareTag(playerTag))
             {
-                if (collider.CompareTag(playerTag))
-                {
-                    Debug.Log("hit player");
-                    hasHitPlayer = true; 
-                    break; 
-                }
+                Debug.Log("hit player" + check);
+                hasHitPlayer = true;
+                check++;
+                break;
             }
         }
     }
+}
+    public void SetHitAnimationPlaying(bool isPlaying)
+{
+    isHitAnimationPlaying = isPlaying;
+}
        private void OnDrawGizmos()
     {
         if (Attackpoint != null)

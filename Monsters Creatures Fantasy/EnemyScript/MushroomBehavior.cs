@@ -12,7 +12,7 @@ public class MushroomBehavior : MonoBehaviour
     public float attackradius;
     public string playerTag = "Player";
     private bool hasHitPlayer = false;
-
+    private bool isHitAnimationPlaying = false;
     private Vector3 initialAttackPointLocalPosition;
 #endregion
 #region Detection
@@ -22,6 +22,7 @@ public class MushroomBehavior : MonoBehaviour
     public float attackDelay = 2.5f;
     bool isAttacking = false;
     bool playerInRange = false;
+    int check = 0;
 #endregion
     void Start()
     {
@@ -85,9 +86,15 @@ public class MushroomBehavior : MonoBehaviour
         playerInRange = inRange;
         player = playerTransform;
     }
-       public void attack()
+    public void attack()
     {
-        if (!hasHitPlayer) 
+        if (!mushroomAnim.IsInAttackAnimation() || isHitAnimationPlaying)
+        {
+            hasHitPlayer = false; 
+            return;
+        }
+        
+        if (!hasHitPlayer && mushroomAnim.IsInAttackAnimation()) 
         {
             Collider2D[] players = Physics2D.OverlapCircleAll(Attackpoint.transform.position, attackradius);
 
@@ -95,13 +102,18 @@ public class MushroomBehavior : MonoBehaviour
             {
                 if (collider.CompareTag(playerTag))
                 {
-                    Debug.Log("hit player");
-                    hasHitPlayer = true; 
-                    break; 
+                    Debug.Log("hit player" + check);
+                    hasHitPlayer = true;
+                    check++;
+                    break;
                 }
             }
         }
     }
+       public void SetHitAnimationPlaying(bool isPlaying)
+        {
+            isHitAnimationPlaying = isPlaying;
+        }
        private void OnDrawGizmos()
     {
         if (Attackpoint != null)

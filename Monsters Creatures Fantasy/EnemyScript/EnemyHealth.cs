@@ -11,6 +11,8 @@ public class EnemyHealth : MonoBehaviour
     FlyingAnim FlyingAnim;
     MushroomAnim MushroomAnim;
     public bool isDead = false;
+    
+    public HealthBar healthBar;
 
     void Start()
     {
@@ -19,6 +21,10 @@ public class EnemyHealth : MonoBehaviour
         SkeletonAnim = GetComponent<SkeletonAnim>();
         FlyingAnim = GetComponent<FlyingAnim>();
         MushroomAnim = GetComponent<MushroomAnim>();
+        if (healthBar != null)
+        {
+            healthBar.UpdateHealthBar(currentHealth, health);
+        }
     }
 
     // Update is called once per frame
@@ -36,16 +42,21 @@ public class EnemyHealth : MonoBehaviour
             if (FlyingAnim != null) FlyingAnim.sethitTrigger();
             if (MushroomAnim != null) MushroomAnim.sethitTrigger();
             health = currentHealth; 
+
         }
     }
 
     public void TakeDamage(float damage)
     {
-        // To not play the hit animation if it's the last hit
         if (isDead) return;
 
         currentHealth -= damage;
-        // TO PLAY DEATH ANIMATION IF IT'S THE LAST HIT
+
+        if (healthBar != null)
+        {
+            healthBar.UpdateHealthBar(currentHealth, health);
+        }
+
         if (currentHealth <= 0)
         {
             isDead = true;

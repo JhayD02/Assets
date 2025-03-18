@@ -35,6 +35,11 @@ public class MushroomAnim : MonoBehaviour
     public void sethitTrigger()
     {
         mushroomanim.SetTrigger("Hit");
+        GetComponent<MushroomBehavior>().SetHitAnimationPlaying(true);
+    }
+    public void ResetHitAnimationFlag()
+    {
+        GetComponent<MushroomBehavior>().SetHitAnimationPlaying(false);
     }
     public void setDeathTrigger()
     {
@@ -44,5 +49,13 @@ public class MushroomAnim : MonoBehaviour
     public bool isAttacking()
     {
          return mushroomanim.GetCurrentAnimatorStateInfo(0).IsTag("Attack");
+    }
+        public bool IsInAttackAnimation()
+    {
+        return mushroomanim.GetCurrentAnimatorStateInfo(0).IsName("Attack1") || mushroomanim.GetCurrentAnimatorStateInfo(0).IsName("Attack2");
+    }
+    public bool IsInHitAnimation()
+    {
+        return mushroomanim.GetCurrentAnimatorStateInfo(0).IsName("Hit");
     }
 }
