@@ -3619,6 +3619,7 @@ GameObject:
   - component: {fileID: 566032395}
   - component: {fileID: 566032394}
   - component: {fileID: 566032393}
+  - component: {fileID: 566032397}
   m_Layer: 5
   m_Name: Canvas
   m_TagString: Untagged
@@ -3715,6 +3716,23 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
+--- !u!114 &566032397
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 566032392}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: efcc0d8aeaa93a447b3d7af85c25de58, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
+  enemyPrefab: {fileID: 0}
+  startButton: {fileID: 0}
 --- !u!1 &571902047
 GameObject:
   m_ObjectHideFlags: 0
@@ -6339,9 +6357,9 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
-  lobbyMusic: {fileID: 1580868338}
+  lobbyMusic: {fileID: 0}
   inGameMusic: {fileID: 0}
-  soundEffects: {fileID: 1434398959}
+  soundEffects: {fileID: 0}
   punchSound: {fileID: 0}
   shootSound: {fileID: 0}
   jumpSound: {fileID: 0}
@@ -6359,8 +6377,7 @@ Transform:
   m_LocalPosition: {x: -33.911285, y: -4.8785405, z: -0.20060374}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 1434398960}
+  m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!82 &875177241
@@ -14429,6 +14446,18 @@ MonoBehaviour:
       - m_Target: {fileID: 1816506345}
         m_TargetAssemblyTypeName: NetworkUI, Assembly-CSharp
         m_MethodName: StartHosting
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 11500000, guid: efcc0d8aeaa93a447b3d7af85c25de58, type: 3}
+        m_TargetAssemblyTypeName: Instantiate, Assembly-CSharp
+        m_MethodName: 
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -23082,6 +23111,7 @@ GameObject:
   - component: {fileID: 1816506346}
   - component: {fileID: 1816506345}
   - component: {fileID: 1816506347}
+  - component: {fileID: 1816506348}
   m_Layer: 0
   m_Name: NetworkManager
   m_TagString: Untagged
@@ -23130,6 +23160,7 @@ MonoBehaviour:
   - {fileID: 4341667430938253728, guid: 2fd4551046c0f4348b968cce0ad2dab9, type: 3}
   - {fileID: 4995268445428657944, guid: 9598978f5f0a53d4aae9c724bbcb14d1, type: 3}
   - {fileID: 355411569091134508, guid: 96d3f7c5533df3a41939dcf44616220a, type: 3}
+  - {fileID: 4013148976132766017, guid: f1cd8e77da9adf2418e78ddbe652cd2f, type: 3}
   exceptionsDisconnect: 1
   snapshotSettings:
     bufferTimeMultiplier: 2
@@ -23196,6 +23227,23 @@ MonoBehaviour:
   clientMaxReceivesPerTick: 1000
   clientSendQueueLimit: 10000
   clientReceiveQueueLimit: 10000
+--- !u!114 &1816506348
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1816506344}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: efcc0d8aeaa93a447b3d7af85c25de58, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
+  enemyPrefab: {fileID: 0}
+  startButton: {fileID: 0}
 --- !u!1 &1849457815
 GameObject:
   m_ObjectHideFlags: 0
@@ -24566,5 +24614,3 @@ SceneRoots:
   - {fileID: 1898915509}
   - {fileID: 983388648}
   - {fileID: 875177240}
-  - {fileID: 1328202358}
-  - {fileID: 1580868340}
