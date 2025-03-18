@@ -13,7 +13,9 @@ public class AudioManager : NetworkBehaviour
     public AudioClip punchSound;
     public AudioClip shootSound;
     public AudioClip jumpSound;
-    public AudioClip dashSound;
+    public AudioClip deathSound;
+
+    public AudioClip damageSound;
 
     [SerializeField] AudioSource walkSoundEffects;
 
