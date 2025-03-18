@@ -23,7 +23,6 @@ public class CameraSript : MonoBehaviour
     {
         if (targets.Count == 0)
         {
-            FindAndAddPlayers();
             return;
         }
 
@@ -74,12 +73,5 @@ public class CameraSript : MonoBehaviour
         targets.Add(target);
     }
 
-    void FindAndAddPlayers()
-    {
-        GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
-        foreach (GameObject player in players)
-        {
-            AddTarget(player.transform);
-        }
-    }
+    
 }
