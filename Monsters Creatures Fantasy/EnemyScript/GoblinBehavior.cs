@@ -201,7 +201,7 @@ public class GoblinBehavior : NetworkBehaviour
                     if (health != null)
                     {
                         Debug.Log("Player health before damage: " + health.CurrentHealth);
-                        health.TakeDamage(10); // Adjust the damage value as needed
+                        health.TakeDamage(15); // Adjust the damage value as needed
                         Debug.Log("Player health after damage: " + health.CurrentHealth);
                     }
                     else

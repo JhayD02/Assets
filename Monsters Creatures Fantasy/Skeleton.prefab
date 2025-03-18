@@ -401,7 +401,7 @@ MonoBehaviour:
   attackRange: 2
   stopDistance: 2
   attackDelay: 1
-  distance: 10
+  distance: 3
 --- !u!61 &6436779548619869491
 BoxCollider2D:
   m_ObjectHideFlags: 0

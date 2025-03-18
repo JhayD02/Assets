@@ -189,14 +189,22 @@ public class SkeletonBehavior : NetworkBehaviour
         if (!hasHitPlayer && skeletonAnim.IsInAttackAnimation())
         {
             Collider2D[] players = Physics2D.OverlapCircleAll(Attackpoint.transform.position, attackradius);
-
             foreach (Collider2D collider in players)
             {
                 if (collider.CompareTag(playerTag))
                 {
-                    Debug.Log("hit player" + check);
                     hasHitPlayer = true;
-                    check++;
+                    Debug.Log("Collider detected: " + collider.name);
+                    Health health = collider.GetComponent<Health>();
+                    if (health != null)
+                    {
+                        health.TakeDamage(35);
+                        Debug.Log("Player hit: " + collider.name + ", Health after damage: " + health.CurrentHealth);
+                    }
+                    else
+                    {
+                        Debug.LogError("Player does not have a Health component: " + collider.name);
+                    }
                     break;
                 }
             }
