@@ -30,10 +30,11 @@ public class GoblinBehavior : NetworkBehaviour
     #region Movement
     bool checkDirectionX = true;
     float speed = .1f;
-    public float distance = 10f;
+    public float distance = 2f; // Reduced distance to 2 units
     int check = 0;
     [SyncVar(hook = nameof(OnPositionChanged))] Vector3 syncPosition;
     [SyncVar(hook = nameof(OnDirectionChanged))] bool syncDirection;
+    private Vector3 initialPosition; // Store the initial position
     #endregion
 
     void Start()
@@ -42,6 +43,7 @@ public class GoblinBehavior : NetworkBehaviour
         spriteRenderer = GetComponent<SpriteRenderer>();
         initialAttackPointLocalPosition = Attackpoint.transform.localPosition;
         enemyHealth = GetComponent<EnemyHealth>();
+        initialPosition = transform.position; // Store the initial position
 
         if (goblinAnim == null)
         {
@@ -111,11 +113,12 @@ public class GoblinBehavior : NetworkBehaviour
             goblinAnim.SetRun(-1f);
             spriteRenderer.flipX = true;
         }
-        if (transform.position.x > distance)
+
+        if (transform.position.x > initialPosition.x + distance)
         {
             checkDirectionX = false;
         }
-        if (transform.position.x < -distance)
+        if (transform.position.x < initialPosition.x - distance)
         {
             checkDirectionX = true;
         }
