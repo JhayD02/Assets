@@ -7,7 +7,9 @@ public class JhayAnimation : NetworkBehaviour
 {
     private Animator animator;
     private NetworkAnimator networkAnimator;
-    [SerializeField] private GameObject hitbox;
+    int damage = 25;
+    public float attackRadius = 1f;
+    public Transform attackPoint;
 
     // Start is called before the first frame update
     void Start()
@@ -61,15 +63,51 @@ public class JhayAnimation : NetworkBehaviour
         }
     }
 
-    // Called by animation event
-    public void ActivateHitbox()
+   public void TriggerAttack()
     {
-        hitbox.SetActive(true);
+        CmdAttack();
     }
 
-    // Called by animation event
-    public void DeactivateHitbox() 
+    [Command]
+    void CmdAttack()
     {
-        hitbox.SetActive(false);
+        RpcAttack();
+    }
+
+    [ClientRpc]
+    void RpcAttack()
+    {
+        if (attackPoint == null)
+        {
+            Debug.LogError("Attack point is not set.");
+            return;
+        }
+
+        Collider2D[] hitEnemies = Physics2D.OverlapCircleAll(attackPoint.position, attackRadius);
+
+        foreach (Collider2D enemy in hitEnemies)
+        {
+            if (enemy.CompareTag("Enemy"))
+            {
+                Debug.Log("Hit " + enemy.name);
+                EnemyHealth enemyHealth = enemy.GetComponent<EnemyHealth>();
+                if (enemyHealth != null)
+                {
+                    enemyHealth.TakeDamage(damage);
+                }
+                else
+                {
+                    Debug.LogError("Enemy does not have an EnemyHealth component: " + enemy.name);
+                }
+            }
+        }
+    }
+    private void OnDrawGizmosSelected()
+    {
+        if (attackPoint == null)
+            return;
+
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(attackPoint.position, attackRadius);
     }
 }

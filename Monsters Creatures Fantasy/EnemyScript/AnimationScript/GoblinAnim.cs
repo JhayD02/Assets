@@ -6,16 +6,24 @@ using Mirror;
 public class GoblinAnim : NetworkBehaviour
 {
    Animator Goblinanim;
+   [SyncVar(hook = nameof(OnRunChanged))]
+   private float walkSpeed = 0f;
     void Start()
     {
         Goblinanim = GetComponent<Animator>();
     }
 
 
-    [ClientRpc]
-    public void RpcSetRun(float Run)
+    public void SetRun(float run)
     {
-        Goblinanim.SetFloat("Run", Run);
+        if (!isServer) return; 
+
+        walkSpeed = run; 
+    }
+
+    void OnRunChanged(float oldVal, float newVal)
+    {
+        Goblinanim.SetFloat("Run", newVal);
     }
     [ClientRpc]
      public void RpcsetAttack1Trigger()

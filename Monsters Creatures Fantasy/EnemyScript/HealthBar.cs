@@ -9,8 +9,7 @@ public class HealthBar : NetworkBehaviour
 
     public void UpdateHealthBar(float currentHealth, float maxHealth)
     {
-        if (isLocalPlayer){
+        Debug.Log($"Updating health bar: {currentHealth}/{maxHealth}");
         fill.fillAmount = currentHealth / maxHealth;
-        }
     }
 }
