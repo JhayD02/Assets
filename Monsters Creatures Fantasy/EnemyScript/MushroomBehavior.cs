@@ -98,21 +98,28 @@ public class MushroomBehavior : NetworkBehaviour
     [Server]
     public void AttackPlayer()
     {
+        Debug.Log("AttackPlayer method called");
+
         if (!mushroomAnim.IsInAttackAnimation() || isHitAnimationPlaying)
         {
             hasHitPlayer = false; 
+            Debug.Log("Not in attack animation or hit animation is playing");
             return;
         }
         
+        // Reset hasHitPlayer at the beginning of each attack cycle
+        hasHitPlayer = false;
+
         if (!hasHitPlayer && mushroomAnim.IsInAttackAnimation()) 
         {
             Collider2D[] players = Physics2D.OverlapCircleAll(Attackpoint.transform.position, attackradius);
+            Debug.Log("Number of players detected: " + players.Length);
 
             foreach (Collider2D collider in players)
             {
                 if (collider.CompareTag(playerTag))
                 {
-                    Debug.Log("hit player" + check);
+                    Debug.Log("Player detected: " + collider.name);
                     hasHitPlayer = true;
                     check++;
                     Health health = collider.GetComponent<Health>();
