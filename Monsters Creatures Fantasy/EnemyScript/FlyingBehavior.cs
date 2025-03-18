@@ -31,6 +31,9 @@ public class FlyingBehavior : NetworkBehaviour
     [SerializeField]
     GameObject FlamePrefab;
 
+    [SyncVar(hook = nameof(OnDirectionChanged))]
+    private bool isFacingRight = true;
+
     void Start()
     {
         flyingAnim = GetComponent<FlyingAnim>();
@@ -61,11 +64,11 @@ public class FlyingBehavior : NetworkBehaviour
 
             if (player.position.x > transform.position.x)
             {
-                spriteRenderer.flipX = false;
+                SetDirection(true);
             }
             else
             {
-                spriteRenderer.flipX = true;
+                SetDirection(false);
             }
         }
         else
@@ -79,12 +82,12 @@ public class FlyingBehavior : NetworkBehaviour
         if (checkDirectionX)
         {
             transform.Translate(Vector3.right * speed / 3);
-            spriteRenderer.flipX = false;
+            SetDirection(true);
         }
         else
         {
             transform.Translate(Vector3.left * speed / 3);
-            spriteRenderer.flipX = true;
+            SetDirection(false);
         }
         if (transform.position.x > distance)
         {
@@ -106,6 +109,7 @@ public class FlyingBehavior : NetworkBehaviour
         if (player != null)
         {
             GameObject fireball = Instantiate(FlamePrefab, FlameLoc.position, Quaternion.identity);
+            NetworkServer.Spawn(fireball); 
             fireball.GetComponent<FireballScript>().SetTargetPosition(player.position);
         }
 
@@ -123,5 +127,49 @@ public class FlyingBehavior : NetworkBehaviour
     public void SetHitAnimationPlaying(bool isPlaying)
     {
         isHitAnimationPlaying = isPlaying;
+    }
+
+    [Server]
+    private void SetDirection(bool facingRight)
+    {
+        if (isFacingRight != facingRight)
+        {
+            isFacingRight = facingRight;
+            RpcSetDirection(facingRight);
+        }
+    }
+
+    [ClientRpc]
+    private void RpcSetDirection(bool facingRight)
+    {
+        isFacingRight = facingRight;
+        spriteRenderer.flipX = !facingRight;
+    }
+
+    private void OnDirectionChanged(bool oldDirection, bool newDirection)
+    {
+        spriteRenderer.flipX = !newDirection;
+    }
+
+    [ClientRpc]
+    private void RpcUpdatePosition(Vector3 newPosition)
+    {
+        transform.position = newPosition;
+    }
+
+    [ServerCallback]
+    void FixedUpdate()
+    {
+        if (playerInRange)
+        {
+            Vector3 direction = (player.position - transform.position).normalized;
+            transform.position += direction * speed * Time.fixedDeltaTime;
+            RpcUpdatePosition(transform.position);
+        }
+        else
+        {
+            Patrol();
+            RpcUpdatePosition(transform.position);
+        }
     }
 }

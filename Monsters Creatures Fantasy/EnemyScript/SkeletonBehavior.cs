@@ -40,6 +40,26 @@ public class SkeletonBehavior : NetworkBehaviour
         spriteRenderer = GetComponent<SpriteRenderer>();
         initialAttackPointLocalPosition = Attackpoint.transform.localPosition;
         enemyHealth = GetComponent<EnemyHealth>();
+
+        if (skeletonAnim == null)
+        {
+            Debug.LogError("SkeletonAnim component not found on " + gameObject.name);
+        }
+
+        if (spriteRenderer == null)
+        {
+            Debug.LogError("SpriteRenderer component not found on " + gameObject.name);
+        }
+
+        if (enemyHealth == null)
+        {
+            Debug.LogError("EnemyHealth component not found on " + gameObject.name);
+        }
+
+        if (Attackpoint == null)
+        {
+            Debug.LogError("Attackpoint is not set on " + gameObject.name);
+        }
     }
 
     void Update()
@@ -165,13 +185,13 @@ public class SkeletonBehavior : NetworkBehaviour
                     hasHitPlayer = true;
                     check++;
 
-                    Health health = collider.GetComponent<Health>();
-                    if (health != null)
-                    {
-                        Debug.Log("Player health before damage: " + health.CurrentHealth);
-                        health.TakeDamage(10); // Adjust the damage value as needed
-                        Debug.Log("Player health after damage: " + health.CurrentHealth);
-                    }
+                    // Health health = collider.GetComponent<Health>();
+                    // if (health != null)
+                    // {
+                    //     Debug.Log("Player health before damage: " + health.CurrentHealth);
+                    //     health.TakeDamage(10); // Adjust the damage value as needed
+                    //     Debug.Log("Player health after damage: " + health.CurrentHealth);
+                    // }
                     else
                     {
                         Debug.LogError("Player does not have a PlayerHealth component: " + collider.name);
@@ -193,6 +213,7 @@ public class SkeletonBehavior : NetworkBehaviour
         {
             Gizmos.color = Color.red;
             Gizmos.DrawWireSphere(Attackpoint.transform.position, attackradius);
+            Debug.Log("Attackpoint.transform.position: " + Attackpoint.transform.position);
         }
     }
 }
