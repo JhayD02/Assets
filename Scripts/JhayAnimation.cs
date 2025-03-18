@@ -12,6 +12,7 @@ public class JhayAnimation : NetworkBehaviour
     public Transform attackPoint;
     
     AudioManager audioManager;
+    private WinConScript winConScript; // Reference to the WinConScript component
 
     // Start is called before the first frame update
     void Start()
@@ -19,6 +20,18 @@ public class JhayAnimation : NetworkBehaviour
         animator = GetComponent<Animator>();
         networkAnimator = GetComponent<NetworkAnimator>();
         audioManager = GameObject.FindGameObjectWithTag("AudioManager").GetComponent<AudioManager>();
+
+        // Find the WinConScript in the scene
+        GameObject winConObject = GameObject.Find("wincond");
+        if (winConObject != null)
+        {
+            winConScript = winConObject.GetComponent<WinConScript>();
+        }
+
+        if (winConScript == null)
+        {
+            Debug.LogError("WinConScript component not found in the 'wincond' GameObject.");
+        }
     }
 
     // Update is called once per frame
@@ -72,10 +85,20 @@ public class JhayAnimation : NetworkBehaviour
         {
             networkAnimator.SetTrigger("Death");
             audioManager.PlaySFX(audioManager.deathSound);
+
+            // Call the lose game command
+            if (winConScript != null)
+            {
+                winConScript.CmdLoseGame();
+            }
+            else
+            {
+                Debug.LogError("WinConScript component is null.");
+            }
         }
     }
 
-   public void TriggerAttack()
+    public void TriggerAttack()
     {
         CmdAttack();
     }
@@ -114,6 +137,7 @@ public class JhayAnimation : NetworkBehaviour
             }
         }
     }
+
     private void OnDrawGizmosSelected()
     {
         if (attackPoint == null)

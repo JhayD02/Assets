@@ -11304,8 +11304,8 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
-  losePanelTag: LosePanel
-  winPanelTag: WinPanel
+  losePanel: {fileID: 2110387021399933820}
+  winPanel: {fileID: 4980419470197647198}
 --- !u!4 &1251820643
 Transform:
   m_ObjectHideFlags: 0
