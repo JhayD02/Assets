@@ -18,11 +18,18 @@ public class BulletScript : MonoBehaviour
 
     void OnCollisionEnter2D(Collision2D collision)
     {
-         if (collision.gameObject.CompareTag("Enemy"))
-         {
-          EnemyHealth enemyHealth = collision.gameObject.GetComponent<EnemyHealth>();
-          {
-             if (enemyHealth != null)
+        // Check if the collision is with an enemy
+        if (collision.gameObject.CompareTag("Enemy"))
+        {
+            // Check if the enemy is a mushroom
+            if (collision.gameObject.GetComponent<MushroomBehavior>() != null)
+            {
+                Debug.Log("Bullet hit a mushroom enemy but did not deal damage.");
+                return; // Do not deal damage to the mushroom enemy
+            }
+
+            EnemyHealth enemyHealth = collision.gameObject.GetComponent<EnemyHealth>();
+            if (enemyHealth != null)
             {
                 enemyHealth.TakeDamage(damage);
                 Debug.Log("Bullet hit " + collision.gameObject.name + " and dealt " + damage + " damage.");
@@ -31,8 +38,8 @@ public class BulletScript : MonoBehaviour
             {
                 Debug.LogError("Enemy does not have an EnemyHealth component: " + collision.gameObject.name);
             }
-          }
-        Destroy(gameObject);
-         }
+
+            Destroy(gameObject); // Destroy the bullet after hitting an enemy
+        }
     }
 }
