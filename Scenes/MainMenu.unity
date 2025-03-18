@@ -880,8 +880,8 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 1816506345}
-        m_TargetAssemblyTypeName: NetworkUI, Assembly-CSharp
-        m_MethodName: StopHosting
+        m_TargetAssemblyTypeName: Mirror.NetworkManager, Mirror
+        m_MethodName: OnStopHost
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -891,9 +891,9 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 1816506349}
+      - m_Target: {fileID: 1822276076}
         m_TargetAssemblyTypeName: ResetScene, Assembly-CSharp
-        m_MethodName: ResetCurrentScene
+        m_MethodName: ResetObject
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -4062,17 +4062,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: efcc0d8aeaa93a447b3d7af85c25de58, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  lastSyncTime: 0
-  <netIdentity>k__BackingField: {fileID: 0}
-  <ComponentIndex>k__BackingField: 0
-  syncVarDirtyBits: 0
-  syncObjectDirtyBits: 0
-  syncVarHookGuard: 0
-  enemyPrefab: {fileID: 0}
-  startButton: {fileID: 0}
 --- !u!1 &571902047
 GameObject:
   m_ObjectHideFlags: 0
@@ -14910,12 +14899,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 11039a5b0aa711844baea45d79cc3eff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  smokes:
-  - {fileID: 1868871166}
-  - {fileID: 551004946}
-  - {fileID: 1149725436}
-  - {fileID: 1000511999}
-  - {fileID: 344682401}
 --- !u!95 &1454044523
 Animator:
   serializedVersion: 5
@@ -15931,12 +15914,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 11039a5b0aa711844baea45d79cc3eff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  smokes:
-  - {fileID: 1868871166}
-  - {fileID: 551004946}
-  - {fileID: 1149725436}
-  - {fileID: 1000511999}
-  - {fileID: 344682401}
 --- !u!61 &1526861697
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -24295,7 +24272,6 @@ GameObject:
   - component: {fileID: 1816506345}
   - component: {fileID: 1816506347}
   - component: {fileID: 1816506348}
-  - component: {fileID: 1816506349}
   m_Layer: 0
   m_Name: NetworkManager
   m_TagString: Untagged
@@ -24423,29 +24399,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: efcc0d8aeaa93a447b3d7af85c25de58, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  lastSyncTime: 0
-  <netIdentity>k__BackingField: {fileID: 0}
-  <ComponentIndex>k__BackingField: 0
-  syncVarDirtyBits: 0
-  syncObjectDirtyBits: 0
-  syncVarHookGuard: 0
-  enemyPrefab: {fileID: 0}
-  startButton: {fileID: 0}
---- !u!114 &1816506349
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1816506344}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 53b23a930c259144a97815905bb924d1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1822276074
 GameObject:
   m_ObjectHideFlags: 0
@@ -24455,6 +24408,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1822276075}
+  - component: {fileID: 1822276076}
   m_Layer: 0
   m_Name: Enemies
   m_TagString: Untagged
@@ -24494,6 +24448,19 @@ Transform:
   - {fileID: 715826385}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1822276076
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1822276074}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 53b23a930c259144a97815905bb924d1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  objectPrefab: {fileID: 1822276074}
 --- !u!1 &1849457815
 GameObject:
   m_ObjectHideFlags: 0
@@ -25777,8 +25744,8 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 1816506345}
-        m_TargetAssemblyTypeName: NetworkUI, Assembly-CSharp
-        m_MethodName: StopClientConnection
+        m_TargetAssemblyTypeName: Mirror.NetworkManager, Mirror
+        m_MethodName: OnStopClient
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -25788,9 +25755,9 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 1816506349}
+      - m_Target: {fileID: 1822276076}
         m_TargetAssemblyTypeName: ResetScene, Assembly-CSharp
-        m_MethodName: ResetCurrentScene
+        m_MethodName: ResetObject
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

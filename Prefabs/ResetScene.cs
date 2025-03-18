@@ -5,8 +5,15 @@ using UnityEngine.SceneManagement;
 
 public class ResetScene : MonoBehaviour
 {
-     public void ResetCurrentScene() 
+
+    public GameObject objectPrefab; // Assign the prefab in the Inspector
+
+    public void ResetObject()
     {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        Vector3 spawnPosition = transform.position;
+        Quaternion spawnRotation = transform.rotation;
+
+        Destroy(gameObject); // Destroy the current object
+        Instantiate(objectPrefab, spawnPosition, spawnRotation); // Spawn a new one
     }
 }
