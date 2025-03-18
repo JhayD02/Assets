@@ -877,11 +877,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2699456228448606249, guid: b4c5cedc75836674bac036b708d6024d, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -20.2
+      value: -26.5
       objectReference: {fileID: 0}
     - target: {fileID: 2699456228448606249, guid: b4c5cedc75836674bac036b708d6024d, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -7.2
+      value: -8.5
       objectReference: {fileID: 0}
     - target: {fileID: 2699456228448606249, guid: b4c5cedc75836674bac036b708d6024d, type: 3}
       propertyPath: m_LocalPosition.z
@@ -918,6 +918,10 @@ PrefabInstance:
     - target: {fileID: 6522478966730156098, guid: b4c5cedc75836674bac036b708d6024d, type: 3}
       propertyPath: m_Name
       value: Goblin
+      objectReference: {fileID: 0}
+    - target: {fileID: 6586001300906627765, guid: b4c5cedc75836674bac036b708d6024d, type: 3}
+      propertyPath: distance
+      value: 3
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -21627,3 +21631,4 @@ SceneRoots:
   - {fileID: 983473709}
   - {fileID: 961446894}
   - {fileID: 1056384887}
+  - {fileID: 89796712}

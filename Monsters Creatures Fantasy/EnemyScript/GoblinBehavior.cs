@@ -25,6 +25,7 @@ public class GoblinBehavior : NetworkBehaviour
     public float attackDelay = 2f;
     [SyncVar] private bool isAttacking = false;
     [SyncVar] private bool playerInRange = false;
+    [SyncVar(hook = nameof(OnDirectionChanged))] private bool isFacingRight = true;
     #endregion
 
     #region Movement
@@ -60,13 +61,14 @@ public class GoblinBehavior : NetworkBehaviour
             Patrol();
         }
 
-        if (spriteRenderer.flipX)
+        // Sync hitbox direction
+        if (isFacingRight)
         {
-            Attackpoint.transform.localPosition = new Vector3(-Mathf.Abs(initialAttackPointLocalPosition.x), initialAttackPointLocalPosition.y, initialAttackPointLocalPosition.z);
+            Attackpoint.transform.localPosition = new Vector3(Mathf.Abs(initialAttackPointLocalPosition.x), initialAttackPointLocalPosition.y, initialAttackPointLocalPosition.z);
         }
         else
         {
-            Attackpoint.transform.localPosition = new Vector3(Mathf.Abs(initialAttackPointLocalPosition.x), initialAttackPointLocalPosition.y, initialAttackPointLocalPosition.z);
+            Attackpoint.transform.localPosition = new Vector3(-Mathf.Abs(initialAttackPointLocalPosition.x), initialAttackPointLocalPosition.y, initialAttackPointLocalPosition.z);
         }
     }
 
@@ -76,13 +78,13 @@ public class GoblinBehavior : NetworkBehaviour
         {
             transform.Translate(Vector3.right * speed / 3);
             goblinAnim.RpcSetRun(1f);
-            spriteRenderer.flipX = false;
+            isFacingRight = true;
         }
         else
         {
             transform.Translate(Vector3.left * speed / 3);
             goblinAnim.RpcSetRun(-1f);
-            spriteRenderer.flipX = true;
+            isFacingRight = false;
         }
         if (transform.position.x > distance)
         {
@@ -107,12 +109,12 @@ public class GoblinBehavior : NetworkBehaviour
 
             if (direction.x > 0)
             {
-                spriteRenderer.flipX = false;
+                isFacingRight = true;
                 goblinAnim.RpcSetRun(1f);
             }
             else
             {
-                spriteRenderer.flipX = true;
+                isFacingRight = false;
                 goblinAnim.RpcSetRun(-1f);
             }
         }
@@ -184,6 +186,11 @@ public class GoblinBehavior : NetworkBehaviour
     public void SetHitAnimationPlaying(bool isPlaying)
     {
         isHitAnimationPlaying = isPlaying;
+    }
+
+    void OnDirectionChanged(bool oldValue, bool newValue)
+    {
+        spriteRenderer.flipX = !newValue;
     }
 
     private void OnDrawGizmos()
