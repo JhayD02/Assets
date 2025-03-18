@@ -356,6 +356,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Skeleton
       objectReference: {fileID: 0}
+    - target: {fileID: 4341667430938253728, guid: 2fd4551046c0f4348b968cce0ad2dab9, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7228131072933444473, guid: 2fd4551046c0f4348b968cce0ad2dab9, type: 3}
       propertyPath: m_LocalPosition.x
       value: -4.93182
@@ -1028,10 +1032,6 @@ PrefabInstance:
     - target: {fileID: 3717500687926290034, guid: cfa05a647bef9e34f9c1cb8691e37f61, type: 3}
       propertyPath: m_Name
       value: FlyingCreature
-      objectReference: {fileID: 0}
-    - target: {fileID: 3717500687926290034, guid: cfa05a647bef9e34f9c1cb8691e37f61, type: 3}
-      propertyPath: m_IsActive
-      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
