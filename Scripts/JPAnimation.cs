@@ -55,22 +55,12 @@ public class JPAnimation : MonoBehaviour
     public void ActivateHitbox()
     {
         hitbox.SetActive(true);
-        GameObject enemy = GameObject.FindGameObjectWithTag("Enemy");
-        int damage = 10;
-
-         if (enemy != null)
-        {
-            EnemyHealth enemyHealth = enemy.GetComponent<EnemyHealth>();
-            if (enemyHealth != null)
-            {
-                enemyHealth.TakeDamage(damage);
-            }
-        }
     }
 
     // Called by animation event
     public void DeactivateHitbox() 
     {
         hitbox.SetActive(false);
+
     }
 }

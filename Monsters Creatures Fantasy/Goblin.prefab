@@ -413,10 +413,10 @@ GameObject:
   - component: {fileID: 1059859448322229538}
   - component: {fileID: 8083308710005491644}
   - component: {fileID: 6586001300906627765}
-  - component: {fileID: 7138123200367104449}
   - component: {fileID: 5926033380486170238}
   - component: {fileID: 6858684173713280539}
   - component: {fileID: 1982204884760925278}
+  - component: {fileID: 1405851281099351415}
   m_Layer: 0
   m_Name: Goblin
   m_TagString: Enemy
@@ -552,33 +552,6 @@ MonoBehaviour:
   stopDistance: 2
   attackDelay: 2
   distance: 3
---- !u!50 &7138123200367104449
-Rigidbody2D:
-  serializedVersion: 4
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6522478966730156098}
-  m_BodyType: 0
-  m_Simulated: 1
-  m_UseFullKinematicContacts: 0
-  m_UseAutoMass: 0
-  m_Mass: 1
-  m_LinearDrag: 0
-  m_AngularDrag: 0.05
-  m_GravityScale: 1
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_Interpolate: 0
-  m_SleepingMode: 1
-  m_CollisionDetection: 0
-  m_Constraints: 2
 --- !u!61 &5926033380486170238
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -660,6 +633,33 @@ MonoBehaviour:
   serverOnly: 0
   visibility: 0
   hasSpawned: 0
+--- !u!50 &1405851281099351415
+Rigidbody2D:
+  serializedVersion: 4
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6522478966730156098}
+  m_BodyType: 0
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 0
+  m_UseAutoMass: 0
+  m_Mass: 1
+  m_LinearDrag: 0
+  m_AngularDrag: 0.05
+  m_GravityScale: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_Interpolate: 0
+  m_SleepingMode: 1
+  m_CollisionDetection: 0
+  m_Constraints: 7
 --- !u!1 &8150006806948276546
 GameObject:
   m_ObjectHideFlags: 0
