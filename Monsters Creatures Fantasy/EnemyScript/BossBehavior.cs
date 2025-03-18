@@ -25,6 +25,7 @@ public class BossBehavior : NetworkBehaviour
     public float attackDelay = 2f;
     [SyncVar] bool isAttacking = false;
     [SyncVar] bool playerInRange = false;
+    [SyncVar(hook = nameof(OnDirectionChanged))] bool isFacingRight = true;
     int check = 0;
     #endregion
 
@@ -58,22 +59,22 @@ public class BossBehavior : NetworkBehaviour
             {
                 if (player.position.x > transform.position.x)
                 {
-                    spriteRenderer.flipX = false;
+                    isFacingRight = true;
                 }
                 else
                 {
-                    spriteRenderer.flipX = true;
+                    isFacingRight = false;
                 }
             }
 
             // Sync hitbox direction
-            if (spriteRenderer.flipX)
+            if (isFacingRight)
             {
-                Attackpoint.transform.localPosition = new Vector3(-Mathf.Abs(initialAttackPointLocalPosition.x), initialAttackPointLocalPosition.y, initialAttackPointLocalPosition.z);
+                Attackpoint.transform.localPosition = new Vector3(Mathf.Abs(initialAttackPointLocalPosition.x), initialAttackPointLocalPosition.y, initialAttackPointLocalPosition.z);
             }
             else
             {
-                Attackpoint.transform.localPosition = new Vector3(Mathf.Abs(initialAttackPointLocalPosition.x), initialAttackPointLocalPosition.y, initialAttackPointLocalPosition.z);
+                Attackpoint.transform.localPosition = new Vector3(-Mathf.Abs(initialAttackPointLocalPosition.x), initialAttackPointLocalPosition.y, initialAttackPointLocalPosition.z);
             }
         }
         else
@@ -142,12 +143,12 @@ public class BossBehavior : NetworkBehaviour
                 {
                     hasHitPlayer = true;
                     Debug.Log("Collider detected: " + collider.name);
-                    Health health = collider.GetComponent<Health>();
-                    if (health != null)
-                    {
-                        health.TakeDamage(35);
-                        Debug.Log("Player hit: " + collider.name + ", Health after damage: " + health.CurrentHealth);
-                    }
+                    // Health health = collider.GetComponent<Health>();
+                    // if (health != null)
+                    // {
+                    //     health.TakeDamage(35);
+                    //     Debug.Log("Player hit: " + collider.name + ", Health after damage: " + health.CurrentHealth);
+                    // }
                     else
                     {
                         Debug.LogError("Player does not have a Health component: " + collider.name);
@@ -162,5 +163,10 @@ public class BossBehavior : NetworkBehaviour
     public void SetHitAnimationPlaying(bool isPlaying)
     {
         isHitAnimationPlaying = isPlaying;
+    }
+
+    void OnDirectionChanged(bool oldValue, bool newValue)
+    {
+        spriteRenderer.flipX = !newValue;
     }
 }
