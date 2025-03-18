@@ -32,6 +32,8 @@ public class GoblinBehavior : NetworkBehaviour
     float speed = .1f;
     public float distance = 10f;
     int check = 0;
+    [SyncVar(hook = nameof(OnPositionChanged))] Vector3 syncPosition;
+    [SyncVar(hook = nameof(OnDirectionChanged))] bool syncDirection;
     #endregion
 
     void Start()
@@ -40,11 +42,36 @@ public class GoblinBehavior : NetworkBehaviour
         spriteRenderer = GetComponent<SpriteRenderer>();
         initialAttackPointLocalPosition = Attackpoint.transform.localPosition;
         enemyHealth = GetComponent<EnemyHealth>();
+
+        if (goblinAnim == null)
+        {
+            Debug.LogError("GoblinAnim component not found on " + gameObject.name);
+        }
+
+        if (spriteRenderer == null)
+        {
+            Debug.LogError("SpriteRenderer component not found on " + gameObject.name);
+        }
+
+        if (enemyHealth == null)
+        {
+            Debug.LogError("EnemyHealth component not found on " + gameObject.name);
+        }
+
+        if (Attackpoint == null)
+        {
+            Debug.LogError("Attackpoint is not set on " + gameObject.name);
+        }
     }
 
     void Update()
     {
-        if (!isServer) return;
+        if (!isServer)
+        {
+            transform.position = syncPosition;
+            spriteRenderer.flipX = syncDirection;
+            return;
+        }
 
         if (enemyHealth.isDead)
         {
@@ -75,13 +102,13 @@ public class GoblinBehavior : NetworkBehaviour
         if (checkDirectionX)
         {
             transform.Translate(Vector3.right * speed / 3);
-            goblinAnim.RpcSetRun(1f);
+            goblinAnim.SetRun(1f);
             spriteRenderer.flipX = false;
         }
         else
         {
             transform.Translate(Vector3.left * speed / 3);
-            goblinAnim.RpcSetRun(-1f);
+            goblinAnim.SetRun(-1f);
             spriteRenderer.flipX = true;
         }
         if (transform.position.x > distance)
@@ -92,6 +119,9 @@ public class GoblinBehavior : NetworkBehaviour
         {
             checkDirectionX = true;
         }
+
+        syncPosition = transform.position;
+        syncDirection = spriteRenderer.flipX;
     }
 
     void FollowPlayer()
@@ -108,23 +138,26 @@ public class GoblinBehavior : NetworkBehaviour
             if (direction.x > 0)
             {
                 spriteRenderer.flipX = false;
-                goblinAnim.RpcSetRun(1f);
+                goblinAnim.SetRun(1f);
             }
             else
             {
                 spriteRenderer.flipX = true;
-                goblinAnim.RpcSetRun(-1f);
+                goblinAnim.SetRun(-1f);
             }
         }
         else
         {
-            goblinAnim.RpcSetRun(0f);
+            goblinAnim.SetRun(0f);
         }
 
         if (distanceToPlayer <= attackRange && !isAttacking)
         {
             StartCoroutine(Attack());
         }
+
+        syncPosition = transform.position;
+        syncDirection = spriteRenderer.flipX;
     }
 
     [Server]
@@ -145,7 +178,7 @@ public class GoblinBehavior : NetworkBehaviour
     }
 
     [Server]
-    public void AttackPlayer()
+    public void attack()
     {
         if (!goblinAnim.IsInAttackAnimation() || isHitAnimationPlaying)
         {
@@ -168,7 +201,7 @@ public class GoblinBehavior : NetworkBehaviour
                     if (health != null)
                     {
                         Debug.Log("Player health before damage: " + health.CurrentHealth);
-                        health.TakeDamage(10); // Adjust the damage value as needed
+                        health.TakeDamage(15); // Adjust the damage value as needed
                         Debug.Log("Player health after damage: " + health.CurrentHealth);
                     }
                     else
@@ -181,6 +214,7 @@ public class GoblinBehavior : NetworkBehaviour
         }
     }
 
+    [Server]
     public void SetHitAnimationPlaying(bool isPlaying)
     {
         isHitAnimationPlaying = isPlaying;
@@ -193,5 +227,15 @@ public class GoblinBehavior : NetworkBehaviour
             Gizmos.color = Color.red;
             Gizmos.DrawWireSphere(Attackpoint.transform.position, attackradius);
         }
+    }
+
+    void OnPositionChanged(Vector3 oldPosition, Vector3 newPosition)
+    {
+        transform.position = newPosition;
+    }
+
+    void OnDirectionChanged(bool oldDirection, bool newDirection)
+    {
+        spriteRenderer.flipX = newDirection;
     }
 }

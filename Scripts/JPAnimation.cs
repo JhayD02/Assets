@@ -61,5 +61,6 @@ public class JPAnimation : MonoBehaviour
     public void DeactivateHitbox() 
     {
         hitbox.SetActive(false);
+
     }
 }

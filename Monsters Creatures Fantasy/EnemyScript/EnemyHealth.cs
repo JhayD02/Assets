@@ -6,7 +6,7 @@ using Mirror;
 public class EnemyHealth : NetworkBehaviour
 {
     public float health;
-    [SyncVar] public float currentHealth;
+    [SyncVar(hook = nameof(OnHealthChanged))] public float currentHealth;
     GoblinAnim GoblinAnim;
     SkeletonAnim SkeletonAnim;
     FlyingAnim FlyingAnim;
@@ -15,6 +15,7 @@ public class EnemyHealth : NetworkBehaviour
     [SyncVar] public bool isDead = false;
     
     public HealthBar healthBar;
+    private bool hitTriggered = false; // Flag to control hit animation trigger
 
     void Start()
     {
@@ -30,32 +31,17 @@ public class EnemyHealth : NetworkBehaviour
         }
     }
 
-    void Update()
-    {
-        if (isDead) return;
-
-        if (currentHealth < health && currentHealth > 0)
-        {
-            // JUST TO PLAY ANIMATION
-            Debug.Log("Enemy hit, triggering animations");
-            if (GoblinAnim != null) GoblinAnim.RpcsethitTrigger();
-            if (SkeletonAnim != null) SkeletonAnim.RpcsethitTrigger();
-            if (FlyingAnim != null) FlyingAnim.RpcsethitTrigger();
-            if (MushroomAnim != null) MushroomAnim.RpcsethitTrigger();
-            if (bossAnim != null) bossAnim.RpcSetHitTrigger();
-            health = currentHealth; 
-        }
-    }
-
     [Server]
     public void TakeDamage(float damage, bool triggerHitAnimation = true)
     {
         if (isDead) return;
 
+        float oldHealth = currentHealth;
         currentHealth -= damage;
 
         if (healthBar != null)
         {
+            Debug.Log($"Taking damage: {damage}, new health: {currentHealth}");
             healthBar.UpdateHealthBar(currentHealth, health);
         }
 
@@ -64,16 +50,19 @@ public class EnemyHealth : NetworkBehaviour
             isDead = true;
             RpcHandleDeath();
         }
-        else if (triggerHitAnimation && currentHealth < health)
+        else if (triggerHitAnimation && !hitTriggered) // Only trigger if not already hit
         {
+            hitTriggered = true;
             RpcHandleHit();
-            health = currentHealth;
+            StartCoroutine(ResetHitTrigger()); // Reset hit trigger after a short delay
         }
     }
 
     [ClientRpc]
     void RpcHandleHit()
     {
+        if (isDead) return; // Prevent hit animation if already dead
+
         // JUST TO PLAY ANIMATION
         Debug.Log("Enemy hit, triggering animations");
         if (GoblinAnim != null) GoblinAnim.RpcsethitTrigger();
@@ -91,7 +80,23 @@ public class EnemyHealth : NetworkBehaviour
         if (FlyingAnim != null) FlyingAnim.RpcsetDeathTrigger();
         if (MushroomAnim != null) MushroomAnim.RpcsetDeathTrigger();
         if (bossAnim != null) bossAnim.RpcSetDeathTrigger();
-        Destroy(gameObject, 1f);
+        
         Debug.Log("Enemy is dead");
+        Destroy(gameObject, 1f);
+    }
+
+    void OnHealthChanged(float oldHealth, float newHealth)
+    {
+        if (healthBar != null)
+        {
+            Debug.Log($"Health changed: {oldHealth} -> {newHealth}");
+            healthBar.UpdateHealthBar(newHealth, health);
+        }
+    }
+
+    private IEnumerator ResetHitTrigger()
+    {
+        yield return new WaitForSeconds(0.5f); // Adjust delay as needed
+        hitTriggered = false;
     }
 }

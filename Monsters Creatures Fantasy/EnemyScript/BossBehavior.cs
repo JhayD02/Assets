@@ -143,17 +143,16 @@ public class BossBehavior : NetworkBehaviour
                 {
                     hasHitPlayer = true;
                     Debug.Log("Collider detected: " + collider.name);
-                    // Health health = collider.GetComponent<Health>();
-                    // if (health != null)
-                    // {
-                    //     health.TakeDamage(35);
-                    //     Debug.Log("Player hit: " + collider.name + ", Health after damage: " + health.CurrentHealth);
-                    // }
-                    // else
-                    // {
-                    //     Debug.LogError("Player does not have a Health component: " + collider.name);
-                    // }
-                    
+                    Health health = collider.GetComponent<Health>();
+                    if (health != null)
+                    {
+                        health.TakeDamage(35);
+                        Debug.Log("Player hit: " + collider.name + ", Health after damage: " + health.CurrentHealth);
+                    }
+                    else
+                    {
+                        Debug.LogError("Player does not have a Health component: " + collider.name);
+                    }
                     break;
                 }
             }
