@@ -11,10 +11,15 @@ public class Health : MonoBehaviour
     public float CurrentHealth => currentHealth;
     public float MaxHealth => maxHealth;
 
+    [SerializeField]
+    private Transform healthBar; // Reference to the health bar transform
+
     // Start is called before the first frame update
     void Start()
     {
         currentHealth = maxHealth;
+        SetInitialHealthBarScale();
+        UpdateHealthBar();
     }
 
     // Update is called once per frame
@@ -27,6 +32,7 @@ public class Health : MonoBehaviour
     {
         currentHealth -= amount;
         currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);
+        UpdateHealthBar();
         if (currentHealth <= 0)
         {
             // Handle death
@@ -39,6 +45,26 @@ public class Health : MonoBehaviour
         if (collision.gameObject.CompareTag("SafetyNet"))
         {
             TakeDamage(10f); // Example damage amount
+        }
+    }
+
+    private void UpdateHealthBar()
+    {
+        if (healthBar != null)
+        {
+            Vector3 healthBarScale = healthBar.localScale;
+            healthBarScale.x = currentHealth / maxHealth;
+            healthBar.localScale = healthBarScale;
+        }
+    }
+
+    private void SetInitialHealthBarScale()
+    {
+        if (healthBar != null)
+        {
+            Vector3 healthBarScale = healthBar.localScale;
+            healthBarScale.x = 1f; // Set the initial scale to 1
+            healthBar.localScale = healthBarScale;
         }
     }
 }
