@@ -1,8 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Mirror;
 
-public class FlyingBehavior : MonoBehaviour
+public class FlyingBehavior : NetworkBehaviour
 {
     FlyingAnim flyingAnim;
     SpriteRenderer spriteRenderer;
@@ -20,8 +21,8 @@ public class FlyingBehavior : MonoBehaviour
     public float attackRange = 2f;
     public float stopDistance = 2f;
     public float attackDelay = 2f;
-    bool isAttacking = false;
-    bool playerInRange = false;
+    [SyncVar] private bool isAttacking = false;
+    [SyncVar] private bool playerInRange = false;
     int check = 0;
     #endregion
     int checker = 0;
@@ -30,27 +31,27 @@ public class FlyingBehavior : MonoBehaviour
     [SerializeField]
     GameObject FlamePrefab;
 
-
     void Start()
     {
         flyingAnim = GetComponent<FlyingAnim>();
         spriteRenderer = GetComponent<SpriteRenderer>();
         enemyHealth = GetComponent<EnemyHealth>();
 
-         if (enemyHealth == null)
+        if (enemyHealth == null)
         {
             Debug.LogError("EnemyHealth component not found on flying enemy: " + gameObject.name);
         }
-
     }
 
-    // Update is called once per frame
     void Update()
     {
-        if(enemyHealth.isDead)
+        if (!isServer) return;
+
+        if (enemyHealth.isDead)
         {
             return;
         }
+
         if (playerInRange)
         {
             if (!isAttacking)
@@ -71,7 +72,6 @@ public class FlyingBehavior : MonoBehaviour
         {
             Patrol();
         }
-
     }
 
     void Patrol()
@@ -96,13 +96,14 @@ public class FlyingBehavior : MonoBehaviour
         }
     }
 
+    [Server]
     IEnumerator Attack()
     {
         isAttacking = true;
-        flyingAnim.setAttack2Trigger();
+        flyingAnim.RpcsetAttack2Trigger();
     
         yield return new WaitUntil(() => flyingAnim.isAttack1());
-    if (player != null)
+        if (player != null)
         {
             GameObject fireball = Instantiate(FlamePrefab, FlameLoc.position, Quaternion.identity);
             fireball.GetComponent<FireballScript>().SetTargetPosition(player.position);
@@ -112,12 +113,14 @@ public class FlyingBehavior : MonoBehaviour
         isAttacking = false;
     }
 
+    [Server]
     public void SetPlayerInRange(bool inRange, Transform playerTransform)
     {
         playerInRange = inRange;
         player = playerTransform;
     }
-        public void SetHitAnimationPlaying(bool isPlaying)
+
+    public void SetHitAnimationPlaying(bool isPlaying)
     {
         isHitAnimationPlaying = isPlaying;
     }

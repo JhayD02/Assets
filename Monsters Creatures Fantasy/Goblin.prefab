@@ -410,13 +410,14 @@ GameObject:
   - component: {fileID: 7138123200367104449}
   - component: {fileID: 5926033380486170238}
   - component: {fileID: 6858684173713280539}
+  - component: {fileID: 1982204884760925278}
   m_Layer: 0
   m_Name: Goblin
   m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &2699456228448606249
 Transform:
   m_ObjectHideFlags: 0
@@ -520,6 +521,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ef0f834f38d54604bb58ddd0aa5f3506, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
 --- !u!114 &6586001300906627765
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -532,6 +536,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6464a107a136a1942ad21207ce179911, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
   Attackpoint: {fileID: 8150006806948276546}
   attackradius: 1.02
   playerTag: Player
@@ -623,10 +630,30 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fd280341a3622d642b40915e8bd366ea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
   health: 50
   currentHealth: 0
   isDead: 0
   healthBar: {fileID: 1444806969329888066}
+--- !u!114 &1982204884760925278
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6522478966730156098}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sceneId: 0
+  _assetId: 679849453
+  serverOnly: 0
+  visibility: 0
+  hasSpawned: 0
 --- !u!1 &8150006806948276546
 GameObject:
   m_ObjectHideFlags: 0

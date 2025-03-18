@@ -1,56 +1,66 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Mirror;
 
-public class BossAnimation : MonoBehaviour
+public class BossAnimation : NetworkBehaviour
 {
-    Animator bossAnim;
+    private Animator bossAnim;
+
     void Start()
     {
-       bossAnim = GetComponent<Animator>(); 
+        bossAnim = GetComponent<Animator>();
     }
 
-     public void SetWalk(float walk)
+    [ClientRpc]
+    public void RpcSetWalk(float walk)
     {
         bossAnim.SetFloat("Walk", walk);
     }
-    public void setAttack1Trigger()
+
+    [ClientRpc]
+    public void RpcSetAttack1Trigger()
     {
         bossAnim.SetTrigger("Attack1");
     }
-    public void setAttack2Trigger()
+
+    [ClientRpc]
+    public void RpcSetAttack2Trigger()
     {
         bossAnim.SetTrigger("Attack2");
-    }   
-    public void setBossattackTrigger()
-    {
-        bossAnim.SetTrigger("Bossattack");
     }
-        public void sethitTrigger()
+
+    [ClientRpc]
+    public void RpcSetHitTrigger()
     {
         bossAnim.SetTrigger("Hit");
         GetComponent<BossBehavior>().SetHitAnimationPlaying(true);
     }
-    public void ResetHitAnimationFlag()
+
+    [ClientRpc]
+    public void RpcResetHitAnimationFlag()
     {
         GetComponent<BossBehavior>().SetHitAnimationPlaying(false);
-
     }
-        public void setDeathTrigger()
+
+    [ClientRpc]
+    public void RpcSetDeathTrigger()
     {
         bossAnim.SetTrigger("Death");
     }
-        public bool isAttacking()
+
+    public bool IsAttacking()
     {
-         return bossAnim.GetCurrentAnimatorStateInfo(0).IsTag("Attack");
+        return bossAnim.GetCurrentAnimatorStateInfo(0).IsTag("Attack");
     }
+
     public bool IsInAttackAnimation()
     {
         return bossAnim.GetCurrentAnimatorStateInfo(0).IsName("Attack1") || bossAnim.GetCurrentAnimatorStateInfo(0).IsName("Attack2");
     }
+
     public bool IsInHitAnimation()
     {
         return bossAnim.GetCurrentAnimatorStateInfo(0).IsName("Hit");
     }
-
 }

@@ -441,6 +441,7 @@ GameObject:
   - component: {fileID: 5691231860956168012}
   - component: {fileID: 1148400735048654649}
   - component: {fileID: 5270852538843569500}
+  - component: {fileID: 5965085418341573653}
   m_Layer: 0
   m_Name: Mushroom
   m_TagString: Enemy
@@ -551,6 +552,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7f90d9d16a1da054fa659de44b6be6b5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
 --- !u!114 &3402129380424550692
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -563,6 +567,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1cc3cf8237279904fb4093eb68af8311, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
   Attackpoint: {fileID: 6887548857108298339}
   attackradius: 1.34
   playerTag: Player
@@ -581,6 +588,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fd280341a3622d642b40915e8bd366ea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
   health: 75
   currentHealth: 0
   isDead: 0
@@ -657,3 +667,20 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 2
+--- !u!114 &5965085418341573653
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8932469081986315396}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sceneId: 0
+  _assetId: 4271930958
+  serverOnly: 0
+  visibility: 0
+  hasSpawned: 0

@@ -1,55 +1,60 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Mirror;
 
-public class MushroomBehavior : MonoBehaviour
+public class MushroomBehavior : NetworkBehaviour
 {
     MushroomAnim mushroomAnim;
     SpriteRenderer spriteRenderer;  
     EnemyHealth enemyHealth;
-#region Hitbox
+
+    #region Hitbox
     public GameObject Attackpoint;
     public float attackradius;
     public string playerTag = "Player";
     private bool hasHitPlayer = false;
     private bool isHitAnimationPlaying = false;
     private Vector3 initialAttackPointLocalPosition;
-#endregion
-#region Detection
+    #endregion
+
+    #region Detection
     Transform player;
-     public float attackRange = 10f;
+    public float attackRange = 10f;
     public float stopDistance = 2f;
     public float attackDelay = 2.5f;
-    bool isAttacking = false;
-    bool playerInRange = false;
+    [SyncVar] private bool isAttacking = false;
+    [SyncVar] private bool playerInRange = false;
     int check = 0;
-#endregion
+    #endregion
+
     void Start()
     {
         mushroomAnim = GetComponent<MushroomAnim>();
         spriteRenderer = GetComponent<SpriteRenderer>();
         initialAttackPointLocalPosition = Attackpoint.transform.localPosition;
         enemyHealth = GetComponent<EnemyHealth>();
-
-
     }
 
-    // Update is called once per frame
     void Update()
     {
-    if(enemyHealth.isDead)
-    {
-        return;
-    }
-   if (playerInRange)
-    {
-        float distanceToPlayer = Vector3.Distance(transform.position, player.position);
+        if (!isServer) return;
 
-        if (distanceToPlayer <= attackRange && !isAttacking)
+        if (enemyHealth.isDead)
         {
-            StartCoroutine(Attack());
+            return;
         }
-        if (!mushroomAnim.isAttacking())
+
+        if (playerInRange)
+        {
+            float distanceToPlayer = Vector3.Distance(transform.position, player.position);
+
+            if (distanceToPlayer <= attackRange && !isAttacking)
+            {
+                StartCoroutine(Attack());
+            }
+
+            if (!mushroomAnim.isAttacking())
             {
                 if (player.position.x > transform.position.x)
                 {
@@ -60,33 +65,37 @@ public class MushroomBehavior : MonoBehaviour
                     spriteRenderer.flipX = true;
                 }
             }
-        //This is just so the hitbox follows the direction of the sprite
-        if (spriteRenderer.flipX)
-        {
-            Attackpoint.transform.localPosition = new Vector3(-Mathf.Abs(initialAttackPointLocalPosition.x), initialAttackPointLocalPosition.y, initialAttackPointLocalPosition.z);
-        }
-        else
-        {
-            Attackpoint.transform.localPosition = new Vector3(Mathf.Abs(initialAttackPointLocalPosition.x), initialAttackPointLocalPosition.y, initialAttackPointLocalPosition.z);
+
+            // This is just so the hitbox follows the direction of the sprite
+            if (spriteRenderer.flipX)
+            {
+                Attackpoint.transform.localPosition = new Vector3(-Mathf.Abs(initialAttackPointLocalPosition.x), initialAttackPointLocalPosition.y, initialAttackPointLocalPosition.z);
+            }
+            else
+            {
+                Attackpoint.transform.localPosition = new Vector3(Mathf.Abs(initialAttackPointLocalPosition.x), initialAttackPointLocalPosition.y, initialAttackPointLocalPosition.z);
+            }
         }
     }
 
-    }
-
+    [Server]
     IEnumerator Attack()
     {
         isAttacking = true;
-        mushroomAnim.setAttack1Trigger();
+        mushroomAnim.RpcsetAttack1Trigger();
         yield return new WaitForSeconds(attackDelay);
         isAttacking = false;
     }
 
+    [Command]
     public void SetPlayerInRange(bool inRange, Transform playerTransform)
     {
         playerInRange = inRange;
         player = playerTransform;
     }
-    public void attack()
+
+    [Server]
+    public void AttackPlayer()
     {
         if (!mushroomAnim.IsInAttackAnimation() || isHitAnimationPlaying)
         {
@@ -116,16 +125,18 @@ public class MushroomBehavior : MonoBehaviour
                     {
                         Debug.LogError("Player does not have a PlayerHealth component: " + collider.name);
                     }
-                        break;
+                    break;
                 }
             }
         }
     }
-       public void SetHitAnimationPlaying(bool isPlaying)
-        {
-            isHitAnimationPlaying = isPlaying;
-        }
-       private void OnDrawGizmos()
+
+    public void SetHitAnimationPlaying(bool isPlaying)
+    {
+        isHitAnimationPlaying = isPlaying;
+    }
+
+    private void OnDrawGizmos()
     {
         if (Attackpoint != null)
         {
@@ -133,7 +144,8 @@ public class MushroomBehavior : MonoBehaviour
             Gizmos.DrawWireSphere(Attackpoint.transform.position, attackradius);
         }
     }
-        private void OnCollisionEnter2D(Collision2D collision)
+
+    private void OnCollisionEnter2D(Collision2D collision)
     {
         if (collision.gameObject.CompareTag("Bullet"))
         {
@@ -141,5 +153,4 @@ public class MushroomBehavior : MonoBehaviour
             Debug.Log("Mushroom enemy is immune to bullet damage.");
         }
     }
-    
 }

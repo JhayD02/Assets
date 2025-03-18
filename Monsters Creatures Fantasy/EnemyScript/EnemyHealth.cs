@@ -1,17 +1,18 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Mirror;
 
-public class EnemyHealth : MonoBehaviour
+public class EnemyHealth : NetworkBehaviour
 {
     public float health;
-    public float currentHealth;
+    [SyncVar] public float currentHealth;
     GoblinAnim GoblinAnim;
     SkeletonAnim SkeletonAnim;
     FlyingAnim FlyingAnim;
     MushroomAnim MushroomAnim;
     BossAnimation bossAnim;
-    public bool isDead = false;
+    [SyncVar] public bool isDead = false;
     
     public HealthBar healthBar;
 
@@ -29,25 +30,24 @@ public class EnemyHealth : MonoBehaviour
         }
     }
 
-    // Update is called once per frame
     void Update()
     {
-        // To not play the hit animation if it's the last hit
         if (isDead) return;
 
         if (currentHealth < health && currentHealth > 0)
         {
             // JUST TO PLAY ANIMATION
             Debug.Log("Enemy hit, triggering animations");
-            if (GoblinAnim != null) GoblinAnim.sethitTrigger();
-            if (SkeletonAnim != null) SkeletonAnim.sethitTrigger();
-            if (FlyingAnim != null) FlyingAnim.sethitTrigger();
-            if (MushroomAnim != null) MushroomAnim.sethitTrigger();
-            if (bossAnim != null) bossAnim.sethitTrigger();
+            if (GoblinAnim != null) GoblinAnim.RpcsethitTrigger();
+            if (SkeletonAnim != null) SkeletonAnim.RpcsethitTrigger();
+            if (FlyingAnim != null) FlyingAnim.RpcsethitTrigger();
+            if (MushroomAnim != null) MushroomAnim.RpcsethitTrigger();
+            if (bossAnim != null) bossAnim.RpcSetHitTrigger();
             health = currentHealth; 
         }
     }
 
+    [Server]
     public void TakeDamage(float damage, bool triggerHitAnimation = true)
     {
         if (isDead) return;
@@ -62,24 +62,36 @@ public class EnemyHealth : MonoBehaviour
         if (currentHealth <= 0)
         {
             isDead = true;
-            if (GoblinAnim != null) GoblinAnim.setDeathTrigger();
-            if (SkeletonAnim != null) SkeletonAnim.setDeathTrigger();
-            if (FlyingAnim != null) FlyingAnim.setDeathTrigger();
-            if (MushroomAnim != null) MushroomAnim.setDeathTrigger();
-            if (bossAnim != null) bossAnim.setDeathTrigger();
-            Destroy(gameObject, 1f);
-            Debug.Log("Enemy is dead");
+            RpcHandleDeath();
         }
         else if (triggerHitAnimation && currentHealth < health)
         {
-            // JUST TO PLAY ANIMATION
-            Debug.Log("Enemy hit, triggering animations");
-            if (GoblinAnim != null) GoblinAnim.sethitTrigger();
-            if (SkeletonAnim != null) SkeletonAnim.sethitTrigger();
-            if (FlyingAnim != null) FlyingAnim.sethitTrigger();
-            if (MushroomAnim != null) MushroomAnim.sethitTrigger();
-            if (bossAnim != null) bossAnim.sethitTrigger();
+            RpcHandleHit();
             health = currentHealth;
         }
+    }
+
+    [ClientRpc]
+    void RpcHandleHit()
+    {
+        // JUST TO PLAY ANIMATION
+        Debug.Log("Enemy hit, triggering animations");
+        if (GoblinAnim != null) GoblinAnim.RpcsethitTrigger();
+        if (SkeletonAnim != null) SkeletonAnim.RpcsethitTrigger();
+        if (FlyingAnim != null) FlyingAnim.RpcsethitTrigger();
+        if (MushroomAnim != null) MushroomAnim.RpcsethitTrigger();
+        if (bossAnim != null) bossAnim.RpcSetHitTrigger();
+    }
+
+    [ClientRpc]
+    void RpcHandleDeath()
+    {
+        if (GoblinAnim != null) GoblinAnim.RpcsetDeathTrigger();
+        if (SkeletonAnim != null) SkeletonAnim.RpcsetDeathTrigger();
+        if (FlyingAnim != null) FlyingAnim.RpcsetDeathTrigger();
+        if (MushroomAnim != null) MushroomAnim.RpcsetDeathTrigger();
+        if (bossAnim != null) bossAnim.RpcSetDeathTrigger();
+        Destroy(gameObject, 1f);
+        Debug.Log("Enemy is dead");
     }
 }

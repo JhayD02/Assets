@@ -1,8 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Mirror;
 
-public class MushroomAnim : MonoBehaviour
+public class MushroomAnim : NetworkBehaviour
 {
     Animator mushroomanim;
     void Start()
@@ -10,38 +11,29 @@ public class MushroomAnim : MonoBehaviour
         mushroomanim = GetComponent<Animator>();
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-    //    if(Input.GetButtonDown("Fire1"))
-    //     {
-    //         mushroomanim.SetTrigger("Attack1");
-    //     }
-    //     if(Input.GetButtonDown("Fire2"))
-    //     {
-    //         mushroomanim.SetTrigger("Attack2");
-    //     }
-    }
-
-
-    public void setAttack1Trigger()
+    [ClientRpc]
+    public void RpcsetAttack1Trigger()
     {
         mushroomanim.SetTrigger("Attack1");
     }
-    public void setAttack2Trigger()
+    [ClientRpc]
+    public void RpcsetAttack2Trigger()
     {
         mushroomanim.SetTrigger("Attack2");
     }   
-    public void sethitTrigger()
+    [ClientRpc]
+    public void RpcsethitTrigger()
     {
         mushroomanim.SetTrigger("Hit");
         GetComponent<MushroomBehavior>().SetHitAnimationPlaying(true);
     }
-    public void ResetHitAnimationFlag()
+    [ClientRpc]
+    public void RpcResetHitAnimationFlag()
     {
         GetComponent<MushroomBehavior>().SetHitAnimationPlaying(false);
     }
-    public void setDeathTrigger()
+    [ClientRpc]
+    public void RpcsetDeathTrigger()
     {
         mushroomanim.SetTrigger("Death");
     }

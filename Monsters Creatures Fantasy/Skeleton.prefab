@@ -45,6 +45,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 70367a91107600e4ba3b34879eaaf137, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
 --- !u!61 &8074914913304840528
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -260,6 +263,7 @@ GameObject:
   - component: {fileID: 6436779548619869491}
   - component: {fileID: 3175620553249505004}
   - component: {fileID: 145942282574441945}
+  - component: {fileID: 6903192456086943372}
   m_Layer: 0
   m_Name: Skeleton
   m_TagString: Enemy
@@ -370,6 +374,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 777a6633613d0b74f9ee18c50ce66237, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
 --- !u!114 &3245884458780377948
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -382,6 +389,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 263d7bb1f4e240947b2e479934c9a046, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
   Attackpoint: {fileID: 7872881796283864265}
   attackradius: 1.23
   playerTag: Player
@@ -473,10 +483,30 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fd280341a3622d642b40915e8bd366ea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
   health: 75
   currentHealth: 0
   isDead: 0
   healthBar: {fileID: 5187290781146351165}
+--- !u!114 &6903192456086943372
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4341667430938253728}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sceneId: 0
+  _assetId: 2897631057
+  serverOnly: 0
+  visibility: 0
+  hasSpawned: 0
 --- !u!1 &5090846937032203796
 GameObject:
   m_ObjectHideFlags: 0

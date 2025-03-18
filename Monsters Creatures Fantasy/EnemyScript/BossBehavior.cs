@@ -1,8 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Mirror;
 
-public class BossBehavior : MonoBehaviour
+public class BossBehavior : NetworkBehaviour
 {
     BossAnimation bossAnim;
     SpriteRenderer spriteRenderer;
@@ -22,8 +23,8 @@ public class BossBehavior : MonoBehaviour
     public float attackRange = 2f;
     public float stopDistance = 2f;
     public float attackDelay = 2f;
-    bool isAttacking = false;
-    bool playerInRange = false;
+    [SyncVar] bool isAttacking = false;
+    [SyncVar] bool playerInRange = false;
     int check = 0;
     #endregion
 
@@ -33,12 +34,12 @@ public class BossBehavior : MonoBehaviour
         spriteRenderer = GetComponent<SpriteRenderer>();
         initialAttackPointLocalPosition = Attackpoint.transform.localPosition;
         enemyHealth = GetComponent<EnemyHealth>();
-
     }
-
 
     void Update()
     {
+        if (!isServer) return; // Ensure only the server controls the boss
+
         if (enemyHealth.isDead)
         {
             return;
@@ -53,7 +54,7 @@ public class BossBehavior : MonoBehaviour
                 StartCoroutine(AlternateAttacks());
             }
 
-            if (!bossAnim.isAttacking())
+            if (!bossAnim.IsAttacking())
             {
                 if (player.position.x > transform.position.x)
                 {
@@ -65,7 +66,7 @@ public class BossBehavior : MonoBehaviour
                 }
             }
 
-            // This is just so the hitbox follows the direction of the sprite
+            // Sync hitbox direction
             if (spriteRenderer.flipX)
             {
                 Attackpoint.transform.localPosition = new Vector3(-Mathf.Abs(initialAttackPointLocalPosition.x), initialAttackPointLocalPosition.y, initialAttackPointLocalPosition.z);
@@ -83,6 +84,7 @@ public class BossBehavior : MonoBehaviour
 
     private bool useAttack1 = true;
 
+    [Server]
     IEnumerator AlternateAttacks()
     {
         isAttacking = true;
@@ -90,71 +92,71 @@ public class BossBehavior : MonoBehaviour
 
         if (useAttack1)
         {
-            bossAnim.setAttack1Trigger();
+            RpcSetAttack1Trigger();
         }
         else
         {
-            bossAnim.setAttack2Trigger();
+            RpcSetAttack2Trigger();
         }
 
-        useAttack1 = !useAttack1; // Toggle the attack
+        useAttack1 = !useAttack1;
 
         yield return new WaitForSeconds(attackDelay);
         isAttacking = false;
     }
+
+    [ClientRpc]
+    void RpcSetAttack1Trigger()
+    {
+        bossAnim.RpcSetAttack1Trigger();
+    }
+
+    [ClientRpc]
+    void RpcSetAttack2Trigger()
+    {
+        bossAnim.RpcSetAttack2Trigger();
+    }
+
+    [Server]
     public void SetPlayerInRange(bool inRange, Transform playerTransform)
     {
         playerInRange = inRange;
         player = playerTransform;
     }
 
- public void attack()
-{
-    if (!bossAnim.IsInAttackAnimation() || isHitAnimationPlaying)
+    [Server]
+    public void Attack()
     {
-        hasHitPlayer = false;
-        return;
-    }
-
-    if (!hasHitPlayer && bossAnim.IsInAttackAnimation())
-    {
-        Collider2D[] players = Physics2D.OverlapCircleAll(Attackpoint.transform.position, attackradius);
-        Debug.Log("Players detected: " + players.Length);
-
-        foreach (Collider2D collider in players)
+        if (!bossAnim.IsInAttackAnimation() || isHitAnimationPlaying)
         {
-            if (collider.CompareTag(playerTag))
+            hasHitPlayer = false;
+            return;
+        }
+
+        if (!hasHitPlayer && bossAnim.IsInAttackAnimation())
+        {
+            Collider2D[] players = Physics2D.OverlapCircleAll(Attackpoint.transform.position, attackradius);
+            foreach (Collider2D collider in players)
             {
-                Debug.Log("hit player" + check);
-                hasHitPlayer = true;
-                check++;
-                Health health = collider.GetComponent<Health>();
-                if (health != null)
+                if (collider.CompareTag(playerTag))
                 {
-                    Debug.Log("Player health before damage: " + health.CurrentHealth);
-                    health.TakeDamage(35); // Adjust the damage value as needed
-                    Debug.Log("Player health after damage: " + health.CurrentHealth);
+                    hasHitPlayer = true;
+                    Debug.Log("Collider detected: " + collider.name);
+                    Health health = collider.GetComponent<Health>();
+                    if (health != null)
+                    {
+                        health.TakeDamage(35);
+                        Debug.Log("Player hit: " + collider.name + ", Health after damage: " + health.CurrentHealth);
+                    }
+                    else
+                    {
+                        Debug.LogError("Player does not have a Health component: " + collider.name);
+                    }
+                    
+                    break;
                 }
-                else
-                {
-                    Debug.LogError("Player does not have a PlayerHealth component: " + collider.name);
-                }
-                break;
             }
         }
-    }
-}
-
-    private void OnDrawGizmos()
-    {
-        if (Attackpoint != null)
-        {
-            Gizmos.color = Color.red;
-            Gizmos.DrawWireSphere(Attackpoint.transform.position, attackradius);
-        }
-
-        Gizmos.color = Color.blue;
-        Gizmos.DrawWireSphere(transform.position, attackRange);
     }
 
     public void SetHitAnimationPlaying(bool isPlaying)
