@@ -22,7 +22,10 @@ public class CameraSript : MonoBehaviour
     void LateUpdate()
     {
         if (targets.Count == 0)
+        {
+            FindAndAddPlayers();
             return;
+        }
 
         Move();
         Zoom();
@@ -69,5 +72,14 @@ public class CameraSript : MonoBehaviour
     public void AddTarget(Transform target)
     {
         targets.Add(target);
+    }
+
+    void FindAndAddPlayers()
+    {
+        GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
+        foreach (GameObject player in players)
+        {
+            AddTarget(player.transform);
+        }
     }
 }
