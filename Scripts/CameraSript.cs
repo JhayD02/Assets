@@ -1,8 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Mirror;
 
-public class CameraSript : MonoBehaviour
+public class CameraSript : NetworkBehaviour
 {
     public Vector3 offset;
     public List<Transform> targets = new List<Transform>();
@@ -14,6 +15,7 @@ public class CameraSript : MonoBehaviour
     public Camera cam;
     private Vector3 velocity;
 
+    [ClientCallback]
     void Start()
     {
         cam = GetComponent<Camera>();
@@ -21,6 +23,7 @@ public class CameraSript : MonoBehaviour
         cam.orthographicSize = 5; // Adjust the size as needed
     }
 
+    [ClientCallback]
     void LateUpdate()
     {
         if (targets.Count == 0)
@@ -32,12 +35,14 @@ public class CameraSript : MonoBehaviour
         Zoom();
     }
 
+    [Client]
     void Zoom()
     {
         float newZoom = Mathf.Lerp(maxZoom, minZoom, GetGreatestDistance() / zoomLimiter);
         cam.orthographicSize = Mathf.Lerp(cam.orthographicSize, newZoom, Time.deltaTime);
     }
 
+    [Client]
     void Move()
     {
         Vector3 centerPoint = GetCenterPoint();
@@ -74,12 +79,14 @@ public class CameraSript : MonoBehaviour
     public void AddTarget(Transform target)
     {
         targets.Add(target);
+        Debug.Log("Target added: " + target.name);
     }
 
     public void SetTarget(Transform target)
     {
         targets.Clear();
         targets.Add(target);
+        Debug.Log("Target set: " + target.name);
     }
 
     // New method to add multiple targets
@@ -88,6 +95,7 @@ public class CameraSript : MonoBehaviour
         foreach (var target in newTargets)
         {
             targets.Add(target);
+            Debug.Log("Target added: " + target.name);
         }
     }
 }

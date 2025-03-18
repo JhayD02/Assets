@@ -33,12 +33,9 @@ public class NetworkUI : NetworkManager
     [SerializeField] private GameObject playerPrefab1;
     [SerializeField] private GameObject playerPrefab2;
 
-    private CameraSript cameraScript;
-
     void Start()
     {
         networkTransport = GetComponent<TelepathyTransport>();
-        cameraScript = FindObjectOfType<CameraSript>();
 
         mainMenuPanel.SetActive(false);
         hostPanel.SetActive(false);
@@ -172,21 +169,16 @@ public class NetworkUI : NetworkManager
         // Debug log to check if the player is instantiated
         Debug.Log($"Player instantiated: {player.name}");
 
-        // Add the player to the camera targets
+        // Find the CameraSript instance and add the player to its targets list
+        CameraSript cameraScript = FindObjectOfType<CameraSript>();
         if (cameraScript != null)
         {
             cameraScript.AddTarget(player.transform);
-            Debug.Log($"Player {player.name} added to camera targets.");
+            Debug.Log($"Player added to camera targets: {player.name}");
         }
         else
         {
-            Debug.LogError("CameraSript not found!");
-        }
-
-        // Set the player as the camera target if this is the local player
-        if (conn.identity.isLocalPlayer)
-        {
-            cameraScript.SetTarget(player.transform);
+            Debug.LogWarning("CameraSript not found!");
         }
     }
 
