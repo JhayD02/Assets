@@ -1514,7 +1514,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 939802616667156969, guid: b4c5cedc75836674bac036b708d6024d, type: 3}
       propertyPath: m_LocalScale.x
-      value: 0.67
+      value: 0.4489
       objectReference: {fileID: 0}
     - target: {fileID: 1982204884760925278, guid: b4c5cedc75836674bac036b708d6024d, type: 3}
       propertyPath: sceneId
@@ -26103,7 +26103,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 939802616667156969, guid: b4c5cedc75836674bac036b708d6024d, type: 3}
       propertyPath: m_LocalScale.x
-      value: 0.64
+      value: 0.41599998
       objectReference: {fileID: 0}
     - target: {fileID: 1982204884760925278, guid: b4c5cedc75836674bac036b708d6024d, type: 3}
       propertyPath: sceneId
