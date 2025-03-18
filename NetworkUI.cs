@@ -5,6 +5,7 @@ using TMPro; // Using TextMeshPro
 using UnityEngine.UI;
 using System.Net;
 using System.Net.Sockets;
+using UnityEngine.SceneManagement;
 
 public class NetworkUI : NetworkManager
 {
