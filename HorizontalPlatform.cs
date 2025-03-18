@@ -4,8 +4,8 @@ using UnityEngine;
 public class HorizontalPlatform : MonoBehaviour
 {
     public GameObject platform; // Assign platform in Inspector
-    public float moveDistance = 5f; // Distance to move horizontally
-    public float moveSpeed = 2f; // Movement speed
+    public float moveDistance = 20f; // Distance to move horizontally
+    public float moveSpeed = 3f; // Movement speed
 
     private Vector3 startPosition;
     private Vector3 targetPosition;

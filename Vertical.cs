@@ -4,7 +4,7 @@ using UnityEngine;
 public class Vertical : MonoBehaviour
 {
     public GameObject platform; // Assign platform in Inspector
-    public float moveDistance = 10f; // Distance to move
+    public float moveDistance = 6f; // Distance to move
     public float moveSpeed = 2f; // Movement speed
     public float cooldownTime = 5f; // Time before lever can be used again
     private bool isMovingDown = true; // Tracks platform state
