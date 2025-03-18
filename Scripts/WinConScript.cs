@@ -9,19 +9,20 @@ public class WinConScript : NetworkBehaviour
 {
     public GameObject losePanel; // Assign in the inspector
     public GameObject winPanel; // Assign in the inspector
-    [SyncVar] public int playerHealth = 100; // Example player health
+    private Health playerHealth;
 
     // Start is called before the first frame update
     void Start()
     {
         losePanel.SetActive(false);
         winPanel.SetActive(false);
+        playerHealth = GetComponent<Health>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (isLocalPlayer && playerHealth <= 0)
+        if (isLocalPlayer && playerHealth.CurrentHealth <= 0)
         {
             CmdLoseGame();
         }
@@ -36,13 +37,13 @@ public class WinConScript : NetworkBehaviour
     }
 
     [Command]
-    void CmdLoseGame()
+    public void CmdLoseGame()
     {
         RpcLoseGame();
     }
 
     [Command]
-    void CmdWinGame()
+    public void CmdWinGame()
     {
         RpcWinGame();
     }

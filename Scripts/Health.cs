@@ -1,11 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Mirror; // For networking
 
-public class Health : MonoBehaviour
+public class Health : NetworkBehaviour
 {
     [SerializeField]
     private float maxHealth = 100f;
+    [SyncVar]
     private float currentHealth;
 
     public float CurrentHealth => currentHealth;
@@ -13,6 +15,7 @@ public class Health : MonoBehaviour
 
     [SerializeField]
     private Transform healthBar; // Reference to the health bar transform
+    private Animator animator; // Reference to the Animator component
 
     // Start is called before the first frame update
     void Start()
@@ -20,14 +23,16 @@ public class Health : MonoBehaviour
         currentHealth = maxHealth;
         SetInitialHealthBarScale();
         UpdateHealthBar();
+        animator = GetComponent<Animator>(); // Get the Animator component
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+
     }
 
+    [Server]
     public void TakeDamage(float amount)
     {
         currentHealth -= amount;
@@ -37,6 +42,9 @@ public class Health : MonoBehaviour
         {
             // Handle death
             Debug.Log("Player is dead");
+            RpcPlayDeathAnimation(); // Trigger the death animation on all clients
+                                     // Call the lose game command
+            GetComponent<WinConScript>().CmdLoseGame();
         }
     }
 
@@ -44,7 +52,10 @@ public class Health : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("SafetyNet"))
         {
-            TakeDamage(10f); // Example damage amount
+            if (isServer)
+            {
+                TakeDamage(20f); // Example damage amount
+            }
         }
     }
 
@@ -65,6 +76,15 @@ public class Health : MonoBehaviour
             Vector3 healthBarScale = healthBar.localScale;
             healthBarScale.x = 1f; // Set the initial scale to 1
             healthBar.localScale = healthBarScale;
+        }
+    }
+
+    [ClientRpc]
+    private void RpcPlayDeathAnimation()
+    {
+        if (animator != null)
+        {
+            animator.SetTrigger("Death"); // Assumes you have a "Die" trigger in your Animator
         }
     }
 }
