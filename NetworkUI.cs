@@ -169,8 +169,11 @@ public class NetworkUI : NetworkManager
         // Add the player to the connection
         NetworkServer.AddPlayerForConnection(conn, player);
 
-        // Set the player as the camera target
-        cameraScript.SetTarget(player.transform);
+        // Set the player as the camera target if this is the local player
+        if (conn.identity.isLocalPlayer)
+        {
+            cameraScript.SetTarget(player.transform);
+        }
     }
 
     public string GetLocalIPAddress()

@@ -17,6 +17,8 @@ public class CameraSript : MonoBehaviour
     void Start()
     {
         cam = GetComponent<Camera>();
+        cam.orthographic = true; // Set the camera to orthographic mode
+        cam.orthographicSize = 5; // Adjust the size as needed
     }
 
     void LateUpdate()
@@ -33,13 +35,14 @@ public class CameraSript : MonoBehaviour
     void Zoom()
     {
         float newZoom = Mathf.Lerp(maxZoom, minZoom, GetGreatestDistance() / zoomLimiter);
-        cam.fieldOfView = Mathf.Lerp(cam.fieldOfView, newZoom, Time.deltaTime);
+        cam.orthographicSize = Mathf.Lerp(cam.orthographicSize, newZoom, Time.deltaTime);
     }
 
     void Move()
     {
         Vector3 centerPoint = GetCenterPoint();
         Vector3 newPosition = centerPoint + offset;
+        newPosition.z = -10; // Ensure the camera is positioned correctly in the 2D plane
         transform.position = Vector3.SmoothDamp(transform.position, newPosition, ref velocity, smoothTime);
     }
 
