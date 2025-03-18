@@ -6,12 +6,14 @@ using Mirror;
 public class JhayAnimation : NetworkBehaviour
 {
     private Animator animator;
+    private NetworkAnimator networkAnimator;
     [SerializeField] private GameObject hitbox;
 
     // Start is called before the first frame update
     void Start()
     {
         animator = GetComponent<Animator>();
+        networkAnimator = GetComponent<NetworkAnimator>();
     }
 
     // Update is called once per frame
@@ -35,27 +37,27 @@ public class JhayAnimation : NetworkBehaviour
 
         if (Input.GetKeyDown(KeyCode.Space) && PlayerMovement.isGrounded)
         {
-            animator.SetTrigger("Jump");
+            networkAnimator.SetTrigger("Jump");
         }
 
         if (Input.GetButtonDown("Fire1"))
         {
-            animator.SetTrigger("Melee");
+            networkAnimator.SetTrigger("Melee");
         }
         
         if (Input.GetButtonDown("Fire2"))
         {
-            animator.SetTrigger("Shoot");
+            networkAnimator.SetTrigger("Shoot");
         }
 
         if (Input.GetKeyDown(KeyCode.H))
         {
-            animator.SetTrigger("Hit");
+            networkAnimator.SetTrigger("Hit");
         }
 
         if (Input.GetKeyDown(KeyCode.G))
         {
-            animator.SetTrigger("Death");
+            networkAnimator.SetTrigger("Death");
         }
     }
 

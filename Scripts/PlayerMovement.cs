@@ -15,6 +15,7 @@ public class PlayerMovement : NetworkBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
         originalPosition = transform.position; // Store the original position
+        SetCameraTarget();
     }
 
     void Update()
@@ -82,5 +83,16 @@ public class PlayerMovement : NetworkBehaviour
     void Respawn()
     {
         transform.position = originalPosition; // Respawn the player to the original position
+    }
+
+    private void SetCameraTarget()
+    {
+        if (!isLocalPlayer) return;
+
+        CameraSript cameraScript = Camera.main.GetComponent<CameraSript>();
+        if (cameraScript != null)
+        {
+            cameraScript.SetTarget(transform);
+        }
     }
 }
