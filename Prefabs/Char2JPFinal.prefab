@@ -175,6 +175,7 @@ GameObject:
   - component: {fileID: 2889990639737821720}
   - component: {fileID: 1839741630789023849}
   - component: {fileID: -3002254268313156594}
+  - component: {fileID: 7406162185241568162}
   m_Layer: 0
   m_Name: Char2JPFinal
   m_TagString: Player
@@ -336,6 +337,23 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 4
+--- !u!114 &7406162185241568162
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8297945537399421238}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 17895e8dee87bbb44bd751b2c716997a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncDirection: 1
+  syncMode: 0
+  syncInterval: 0
+  maxHealth: 100
+  healthBar: {fileID: 5052345997282225904}
 --- !u!1001 &5828836567479443614
 PrefabInstance:
   m_ObjectHideFlags: 0

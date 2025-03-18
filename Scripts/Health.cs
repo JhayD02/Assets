@@ -1,14 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Mirror;
 
-public class Health : NetworkBehaviour
+public class Health : MonoBehaviour
 {
     [SerializeField]
     private float maxHealth = 100f;
-
-    [SyncVar(hook = nameof(OnHealthChanged))]
     private float currentHealth;
 
     public float CurrentHealth => currentHealth;
@@ -20,10 +17,7 @@ public class Health : NetworkBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        if (isServer)
-        {
-            currentHealth = maxHealth;
-        }
+        currentHealth = maxHealth;
         SetInitialHealthBarScale();
         UpdateHealthBar();
     }
@@ -34,11 +28,11 @@ public class Health : NetworkBehaviour
         
     }
 
-    [Server]
     public void TakeDamage(float amount)
     {
         currentHealth -= amount;
         currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);
+        UpdateHealthBar();
         if (currentHealth <= 0)
         {
             // Handle death
@@ -50,16 +44,8 @@ public class Health : NetworkBehaviour
     {
         if (collision.gameObject.CompareTag("SafetyNet"))
         {
-            if (isServer)
-            {
-                TakeDamage(10f); // Example damage amount
-            }
+            TakeDamage(10f); // Example damage amount
         }
-    }
-
-    private void OnHealthChanged(float oldHealth, float newHealth)
-    {
-        UpdateHealthBar();
     }
 
     private void UpdateHealthBar()

@@ -37,7 +37,7 @@ public class PlayerMovement : NetworkBehaviour
 
         if (horizontalInput != 0)
         {
-            transform.Translate((0.01f + sprintSpeed) * Time.deltaTime, 0, 0);
+            transform.Translate(0.01f + sprintSpeed, 0, 0);
         }
 
         if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
