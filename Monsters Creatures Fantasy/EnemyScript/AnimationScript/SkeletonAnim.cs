@@ -35,15 +35,21 @@ public class SkeletonAnim : MonoBehaviour
     {
         skeletonanim.SetTrigger("Attack2");
     }   
+    public void setBossattackTrigger()
+    {
+        skeletonanim.SetTrigger("Bossattack");
+    }
     public void sethitTrigger()
     {
         skeletonanim.SetTrigger("Hit");
         GetComponent<SkeletonBehavior>().SetHitAnimationPlaying(true);
+        GetComponent<BossBehavior>().SetHitAnimationPlaying(true);
     }
     public void ResetHitAnimationFlag()
     {
-        // Assuming SkeletonBehavior is attached to the same GameObject
         GetComponent<SkeletonBehavior>().SetHitAnimationPlaying(false);
+        GetComponent<BossBehavior>().SetHitAnimationPlaying(false);
+
     }
     public void setDeathTrigger()
     {

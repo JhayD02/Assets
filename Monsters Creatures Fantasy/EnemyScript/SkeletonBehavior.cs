@@ -7,6 +7,7 @@ public class SkeletonBehavior : MonoBehaviour
     SkeletonAnim skeletonAnim;
     SpriteRenderer spriteRenderer;
     EnemyHealth enemyHealth;
+    //start of hitbox
     #region Hitbox
     public GameObject Attackpoint;
     public float attackradius;
@@ -15,7 +16,7 @@ public class SkeletonBehavior : MonoBehaviour
     private Vector3 initialAttackPointLocalPosition;
     private bool isHitAnimationPlaying = false;
     #endregion
-
+    //Player Detection
     #region Detection
     Transform player;
     public float attackRange = 2f;

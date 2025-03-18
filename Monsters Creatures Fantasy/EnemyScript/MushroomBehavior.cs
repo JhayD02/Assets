@@ -133,5 +133,13 @@ public class MushroomBehavior : MonoBehaviour
             Gizmos.DrawWireSphere(Attackpoint.transform.position, attackradius);
         }
     }
+        private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision.gameObject.CompareTag("Bullet"))
+        {
+            // Ignore bullet damage
+            Debug.Log("Mushroom enemy is immune to bullet damage.");
+        }
+    }
     
 }
