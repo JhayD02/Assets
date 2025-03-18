@@ -25,11 +25,17 @@ public class Health : NetworkBehaviour
         SetInitialHealthBarScale();
         UpdateHealthBar();
         animator = GetComponent<Animator>(); // Get the Animator component
-        winConScript = GetComponent<WinConScript>(); // Get the WinConScript component
+
+        // Find the WinConScript in the scene
+        GameObject winConObject = GameObject.Find("wincond");
+        if (winConObject != null)
+        {
+            winConScript = winConObject.GetComponent<WinConScript>();
+        }
 
         if (winConScript == null)
         {
-            Debug.LogError("WinConScript component not found on the GameObject.");
+            Debug.LogError("WinConScript component not found in the 'wincond' GameObject.");
         }
     }
 

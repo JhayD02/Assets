@@ -7,24 +7,59 @@ using Mirror; // For networking
 
 public class WinConScript : NetworkBehaviour
 {
-    public GameObject losePanel; // Assign in the inspector
-    public GameObject winPanel; // Assign in the inspector
+    public GameObject losePanel; // Reference to the lose panel GameObject
+    public GameObject winPanel; // Reference to the win panel GameObject
     private Health playerHealth;
 
     // Start is called before the first frame update
     void Start()
     {
-        losePanel.SetActive(false);
-        winPanel.SetActive(false);
-        playerHealth = GetComponent<Health>();
+        if (losePanel == null)
+        {
+            Debug.LogError("Lose panel not assigned in the inspector.");
+        }
+        else
+        {
+            losePanel.SetActive(false);
+        }
+
+        if (winPanel == null)
+        {
+            Debug.LogError("Win panel not assigned in the inspector.");
+        }
+        else
+        {
+            winPanel.SetActive(false);
+        }
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (isLocalPlayer && playerHealth.CurrentHealth <= 0)
+        if (playerHealth == null)
         {
-            CmdLoseGame();
+            FindLocalPlayer();
+        }
+
+        if (playerHealth != null && playerHealth.CurrentHealth <= 0)
+        {
+            if (isLocalPlayer)
+            {
+                CmdLoseGame();
+            }
+        }
+    }
+
+    void FindLocalPlayer()
+    {
+        GameObject localPlayer = GameObject.FindWithTag("Player");
+        if (localPlayer != null)
+        {
+            playerHealth = localPlayer.GetComponent<Health>();
+            if (playerHealth == null)
+            {
+                Debug.LogError("Health component not found on the local player.");
+            }
         }
     }
 
@@ -52,13 +87,19 @@ public class WinConScript : NetworkBehaviour
     void RpcLoseGame()
     {
         Time.timeScale = 0; // Pause the game
-        losePanel.SetActive(true);
+        if (losePanel != null)
+        {
+            losePanel.SetActive(true);
+        }
     }
 
     [ClientRpc]
     void RpcWinGame()
     {
         Time.timeScale = 0; // Pause the game
-        winPanel.SetActive(true);
+        if (winPanel != null)
+        {
+            winPanel.SetActive(true);
+        }
     }
 }
