@@ -58,7 +58,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 2.09, z: -0.94712293}
-  m_LocalScale: {x: 3.225, y: 0.2125, z: 1}
+  m_LocalScale: {x: 6.6475315, y: 0.2125, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1177944650818257578}
@@ -105,7 +105,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0, g: 1, b: 0.04619026, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -175,6 +175,7 @@ GameObject:
   - component: {fileID: 1090002621128697270}
   - component: {fileID: 6545912321499340135}
   - component: {fileID: 2203316238042063236}
+  - component: {fileID: 3929591113131291720}
   m_Layer: 0
   m_Name: Char1JhayFinal
   m_TagString: Player
@@ -337,6 +338,20 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 1.571207, y: 4.060049}
   m_EdgeRadius: 0
+--- !u!114 &3929591113131291720
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8981776664140546622}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 17895e8dee87bbb44bd751b2c716997a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxHealth: 100
+  healthBar: {fileID: 7304657804373785704}
 --- !u!1001 &2531526464738162070
 PrefabInstance:
   m_ObjectHideFlags: 0
