@@ -5,15 +5,37 @@ using UnityEngine.SceneManagement;
 
 public class ResetScene : MonoBehaviour
 {
+    private List<Vector3> initialPositions = new List<Vector3>();
+    private List<Quaternion> initialRotations = new List<Quaternion>();
+    private List<GameObject> enemies = new List<GameObject>();
 
-    public GameObject objectPrefab; // Assign the prefab in the Inspector
-
-    public void ResetObject()
+    void Start()
     {
-        Vector3 spawnPosition = transform.position;
-        Quaternion spawnRotation = transform.rotation;
+        // Find all enemies and store their initial positions and rotations
+        foreach (GameObject enemy in GameObject.FindGameObjectsWithTag("Enemy"))
+        {
+            initialPositions.Add(enemy.transform.position);
+            initialRotations.Add(enemy.transform.rotation);
+            enemies.Add(enemy);
+        }
+    }
 
-        Destroy(gameObject); // Destroy the current object
-        Instantiate(objectPrefab, spawnPosition, spawnRotation); // Spawn a new one
+    public void RespawnEnemies(GameObject enemyPrefab)
+    {
+        // Destroy all existing enemies
+        foreach (GameObject enemy in enemies)
+        {
+            Destroy(enemy);
+        }
+
+        // Clear the enemies list
+        enemies.Clear();
+
+        // Respawn enemies at their original positions
+        for (int i = 0; i < initialPositions.Count; i++)
+        {
+            GameObject newEnemy = Instantiate(enemyPrefab, initialPositions[i], initialRotations[i]);
+            enemies.Add(newEnemy);
+        }
     }
 }
