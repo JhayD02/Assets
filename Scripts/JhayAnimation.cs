@@ -65,6 +65,19 @@ public class JhayAnimation : NetworkBehaviour
     public void ActivateHitbox()
     {
         hitbox.SetActive(true);
+         if (enemy.CompareTag("Enemy"))
+            {
+                Debug.Log("Hit " + enemy.name);
+                EnemyHealth enemyHealth = enemy.GetComponent<EnemyHealth>();
+                if (enemyHealth != null)
+                {
+                    enemyHealth.TakeDamage(damage);
+                }
+                else
+                {
+                    Debug.LogError("Enemy does not have an EnemyHealth component: " + enemy.name);
+                }
+            }
     }
 
     // Called by animation event

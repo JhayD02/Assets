@@ -39,7 +39,7 @@ public class EnemyHealth : NetworkBehaviour
             // JUST TO PLAY ANIMATION
             Debug.Log("Enemy hit, triggering animations");
             if (GoblinAnim != null) GoblinAnim.RpcsethitTrigger();
-            if (SkeletonAnim != null) SkeletonAnim.RpcsethitTrigger();
+            if (SkeletonAnim != null) SkeletonAnim.RpcsetDeathTrigger();
             if (FlyingAnim != null) FlyingAnim.RpcsethitTrigger();
             if (MushroomAnim != null) MushroomAnim.RpcsethitTrigger();
             if (bossAnim != null) bossAnim.RpcSetHitTrigger();

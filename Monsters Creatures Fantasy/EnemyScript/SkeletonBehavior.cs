@@ -32,6 +32,8 @@ public class SkeletonBehavior : NetworkBehaviour
     float speed = .1f;
     public float distance = 10f;
     int check = 0;
+    [SyncVar(hook = nameof(OnPositionChanged))] Vector3 syncPosition;
+    [SyncVar(hook = nameof(OnDirectionChanged))] bool syncDirection;
     #endregion
 
     void Start()
@@ -64,7 +66,12 @@ public class SkeletonBehavior : NetworkBehaviour
 
     void Update()
     {
-        if (!isServer) return;
+        if (!isServer)
+        {
+            transform.position = syncPosition;
+            spriteRenderer.flipX = syncDirection;
+            return;
+        }
 
         if (enemyHealth.isDead)
         {
@@ -95,13 +102,13 @@ public class SkeletonBehavior : NetworkBehaviour
         if (checkDirectionX)
         {
             transform.Translate(Vector3.right * speed / 4);
-            skeletonAnim.RpcSetWalk(1f);
+            skeletonAnim.SetWalk(1f);
             spriteRenderer.flipX = false;
         }
         else
         {
             transform.Translate(Vector3.left * speed / 4);
-            skeletonAnim.RpcSetWalk(-1f);
+            skeletonAnim.SetWalk(-1f);
             spriteRenderer.flipX = true;
         }
         if (transform.position.x > distance)
@@ -112,6 +119,9 @@ public class SkeletonBehavior : NetworkBehaviour
         {
             checkDirectionX = true;
         }
+
+        syncPosition = transform.position;
+        syncDirection = spriteRenderer.flipX;
     }
 
     void FollowPlayer()
@@ -128,23 +138,26 @@ public class SkeletonBehavior : NetworkBehaviour
             if (direction.x > 0)
             {
                 spriteRenderer.flipX = false;
-                skeletonAnim.RpcSetWalk(1f);
+                skeletonAnim.SetWalk(1f);
             }
             else
             {
                 spriteRenderer.flipX = true;
-                skeletonAnim.RpcSetWalk(-1f);
+                skeletonAnim.SetWalk(-1f);
             }
         }
         else
         {
-            skeletonAnim.RpcSetWalk(0f);
+            skeletonAnim.SetWalk(0f);
         }
 
         if (distanceToPlayer <= attackRange && !isAttacking)
         {
             StartCoroutine(Attack());
         }
+
+        syncPosition = transform.position;
+        syncDirection = spriteRenderer.flipX;
     }
 
     [Server]
@@ -184,18 +197,6 @@ public class SkeletonBehavior : NetworkBehaviour
                     Debug.Log("hit player" + check);
                     hasHitPlayer = true;
                     check++;
-
-                    // Health health = collider.GetComponent<Health>();
-                    // if (health != null)
-                    // {
-                    //     Debug.Log("Player health before damage: " + health.CurrentHealth);
-                    //     health.TakeDamage(10); // Adjust the damage value as needed
-                    //     Debug.Log("Player health after damage: " + health.CurrentHealth);
-                    // }
-                    // else
-                    // {
-                    //     Debug.LogError("Player does not have a PlayerHealth component: " + collider.name);
-                    // }
                     break;
                 }
             }
@@ -215,5 +216,15 @@ public class SkeletonBehavior : NetworkBehaviour
             Gizmos.DrawWireSphere(Attackpoint.transform.position, attackradius);
             Debug.Log("Attackpoint.transform.position: " + Attackpoint.transform.position);
         }
+    }
+
+    void OnPositionChanged(Vector3 oldPosition, Vector3 newPosition)
+    {
+        transform.position = newPosition;
+    }
+
+    void OnDirectionChanged(bool oldDirection, bool newDirection)
+    {
+        spriteRenderer.flipX = newDirection;
     }
 }

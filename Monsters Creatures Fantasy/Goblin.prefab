@@ -200,6 +200,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 80c3cd9ff2b18ab459efc35506e7a82a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
   background: {fileID: 56861536079434393}
   fill: {fileID: 5187458496816963938}
 --- !u!1 &5907321794303989339
