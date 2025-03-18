@@ -4,48 +4,40 @@ using UnityEngine;
 
 public class CameraSript : MonoBehaviour
 {
-
     public Vector3 offset;
     public List<Transform> targets;
     public float smoothTime = .5f;
-
     public float minZoom = 40;
-
     public float maxZoom = 10;
-
     public float zoomLimiter = 50;
 
     private Camera cam;
+    private Vector3 velocity;
 
     void Start()
     {
         cam = GetComponent<Camera>();
     }
 
-
-    void LateUpdae()
+    void LateUpdate()
     {
-
         if (targets.Count == 0)
             return;
+
         Move();
-
         Zoom();
-
     }
 
     void Zoom()
     {
-        float newZoom = Mathf.Lerp(maxZoom, minZoom, GetGreatestDistance() / 10);
-        cam.fieldOfView = Mathf.Lerp(cam.fieldOfView, newZoom, Time.deltaTime)
+        float newZoom = Mathf.Lerp(maxZoom, minZoom, GetGreatestDistance() / zoomLimiter);
+        cam.fieldOfView = Mathf.Lerp(cam.fieldOfView, newZoom, Time.deltaTime);
     }
 
     void Move()
     {
         Vector3 centerPoint = GetCenterPoint();
-
         Vector3 newPosition = centerPoint + offset;
-
         transform.position = Vector3.SmoothDamp(transform.position, newPosition, ref velocity, smoothTime);
     }
 
@@ -72,5 +64,10 @@ public class CameraSript : MonoBehaviour
             bounds.Encapsulate(targets[i].position);
         }
         return bounds.center;
+    }
+
+    public void AddTarget(Transform target)
+    {
+        targets.Add(target);
     }
 }
