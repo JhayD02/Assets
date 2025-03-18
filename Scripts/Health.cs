@@ -7,14 +7,15 @@ public class Health : NetworkBehaviour
 {
     [SerializeField]
     private float maxHealth = 100f;
-    [SyncVar]
+
+    [SyncVar(hook = nameof(OnHealthChanged))]
     private float currentHealth;
 
     public float CurrentHealth => currentHealth;
     public float MaxHealth => maxHealth;
 
     [SerializeField]
-    private Transform healthBar; // Reference to the health bar transform
+    public HealthBar healthBar; // Reference to the health bar transform
     private Animator animator; // Reference to the Animator component
     private WinConScript winConScript; // Reference to the WinConScript component
     private JhayAnimation jhayAnimation; // Reference to the JhayAnimation component
@@ -89,24 +90,24 @@ public class Health : NetworkBehaviour
         }
     }
 
-    private void UpdateHealthBar()
-    {
-        if (healthBar != null)
-        {
-            Vector3 healthBarScale = healthBar.localScale;
-            healthBarScale.x = currentHealth / maxHealth;
-            healthBar.localScale = healthBarScale;
-        }
-    }
-
     private void SetInitialHealthBarScale()
     {
         if (healthBar != null)
         {
-            Vector3 healthBarScale = healthBar.localScale;
-            healthBarScale.x = 1f; // Set the initial scale to 1
-            healthBar.localScale = healthBarScale;
+            healthBar.UpdateHealthBar(currentHealth, maxHealth);
         }
+    }
+
+    private void UpdateHealthBar()
+    {
+        if (healthBar != null)
+        {
+            healthBar.UpdateHealthBar(currentHealth, maxHealth);
+        }
+    }
+        private void OnHealthChanged(float oldHealth, float newHealth)
+    {
+        UpdateHealthBar();
     }
 
     [ClientRpc]
