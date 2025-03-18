@@ -30,10 +30,11 @@ public class SkeletonBehavior : NetworkBehaviour
     #region Movement
     bool checkDirectionX = true;
     float speed = .1f;
-    public float distance = 10f;
+    public float distance = 2f; // Reduced distance to 2 units
     int check = 0;
     [SyncVar(hook = nameof(OnPositionChanged))] Vector3 syncPosition;
     [SyncVar(hook = nameof(OnDirectionChanged))] bool syncDirection;
+    private Vector3 initialPosition; // Store the initial position
     #endregion
 
     void Start()
@@ -42,6 +43,7 @@ public class SkeletonBehavior : NetworkBehaviour
         spriteRenderer = GetComponent<SpriteRenderer>();
         initialAttackPointLocalPosition = Attackpoint.transform.localPosition;
         enemyHealth = GetComponent<EnemyHealth>();
+        initialPosition = transform.position; // Store the initial position
 
         if (skeletonAnim == null)
         {
@@ -101,21 +103,22 @@ public class SkeletonBehavior : NetworkBehaviour
     {
         if (checkDirectionX)
         {
-            transform.Translate(Vector3.right * speed / 4);
+            transform.Translate(Vector3.right * speed / 3);
             skeletonAnim.SetWalk(1f);
             spriteRenderer.flipX = false;
         }
         else
         {
-            transform.Translate(Vector3.left * speed / 4);
+            transform.Translate(Vector3.left * speed / 3);
             skeletonAnim.SetWalk(-1f);
             spriteRenderer.flipX = true;
         }
-        if (transform.position.x > distance)
+
+        if (transform.position.x > initialPosition.x + distance)
         {
             checkDirectionX = false;
         }
-        else if (transform.position.x < -distance)
+        if (transform.position.x < initialPosition.x - distance)
         {
             checkDirectionX = true;
         }
@@ -131,7 +134,7 @@ public class SkeletonBehavior : NetworkBehaviour
         if (distanceToPlayer > stopDistance)
         {
             Vector3 direction = (player.position - transform.position).normalized;
-            Vector3 newPosition = transform.position + direction * speed / 3;
+            Vector3 newPosition = transform.position + direction * speed / 2;
             newPosition.y = transform.position.y;
             transform.position = newPosition;
 

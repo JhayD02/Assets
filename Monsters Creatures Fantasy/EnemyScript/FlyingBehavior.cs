@@ -12,8 +12,9 @@ public class FlyingBehavior : NetworkBehaviour
     #region Movement
     bool checkDirectionX = true;
     float speed = .1f;
-    public float distance = 10f;
+    public float distance = 2f; // Reduced distance to 2 units
     private bool isHitAnimationPlaying = false;
+    private Vector3 initialPosition; // Store the initial position
     #endregion
     
     #region Detection
@@ -39,6 +40,7 @@ public class FlyingBehavior : NetworkBehaviour
         flyingAnim = GetComponent<FlyingAnim>();
         spriteRenderer = GetComponent<SpriteRenderer>();
         enemyHealth = GetComponent<EnemyHealth>();
+        initialPosition = transform.position; // Store the initial position
 
         if (enemyHealth == null)
         {
@@ -89,11 +91,12 @@ public class FlyingBehavior : NetworkBehaviour
             transform.Translate(Vector3.left * speed / 3);
             SetDirection(false);
         }
-        if (transform.position.x > distance)
+
+        if (transform.position.x > initialPosition.x + distance)
         {
             checkDirectionX = false;
         }
-        if (transform.position.x < -distance)
+        if (transform.position.x < initialPosition.x - distance)
         {
             checkDirectionX = true;
         }
