@@ -612,7 +612,7 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
-  health: 10000
+  health: 50
   currentHealth: 0
   isDead: 0
   healthBar: {fileID: 1444806969329888066}

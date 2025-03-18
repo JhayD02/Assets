@@ -383,7 +383,7 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
-  health: 200
+  health: 300
   currentHealth: 0
   isDead: 0
   healthBar: {fileID: 834519333424374487}
