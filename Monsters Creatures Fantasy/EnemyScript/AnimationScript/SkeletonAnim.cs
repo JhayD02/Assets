@@ -11,7 +11,7 @@ public class SkeletonAnim : NetworkBehaviour
         skeletonanim = GetComponent<Animator>();
     }
 
-[ClientRpc]
+    [ClientRpc]
     public void RpcSetWalk(float walk)
     {
         skeletonanim.SetFloat("Walk", walk);
@@ -36,14 +36,11 @@ public class SkeletonAnim : NetworkBehaviour
     {
         skeletonanim.SetTrigger("Hit");
         GetComponent<SkeletonBehavior>().SetHitAnimationPlaying(true);
-        GetComponent<BossBehavior>().SetHitAnimationPlaying(true);
     }
     [ClientRpc]
     public void RpcResetHitAnimationFlag()
     {
         GetComponent<SkeletonBehavior>().SetHitAnimationPlaying(false);
-        GetComponent<BossBehavior>().SetHitAnimationPlaying(false);
-
     }
     [ClientRpc]
     public void RpcsetDeathTrigger()

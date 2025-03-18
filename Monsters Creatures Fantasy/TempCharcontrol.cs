@@ -1,8 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Mirror;
 
-public class TempCharcontrol : MonoBehaviour
+public class TempCharcontrol : NetworkBehaviour
 {
     private float sprintSpeed;
     public float jumpForce = 5f;
@@ -18,12 +19,24 @@ public class TempCharcontrol : MonoBehaviour
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
+        if (rb == null)
+        {
+            Debug.LogError("Rigidbody2D component not found on " + gameObject.name);
+        }
+
+        if (attackPoint == null)
+        {
+            Debug.LogError("Attack point is not set on " + gameObject.name);
+        }
+
         originalPosition = transform.position;
     }
 
     // Update is called once per frame
     void Update()
     {
+        if (!isLocalPlayer) return;
+
         float horizontalInput = Input.GetAxisRaw("Horizontal");
 
         if (horizontalInput < 0)
@@ -57,11 +70,18 @@ public class TempCharcontrol : MonoBehaviour
         // Check for attack input
         if (Input.GetButtonDown("Fire1"))
         {
-            Attack();
+            CmdAttack();
         }
     }
 
-    void Attack()
+    [Command]
+    void CmdAttack()
+    {
+        RpcAttack();
+    }
+
+    [ClientRpc]
+    void RpcAttack()
     {
         if (attackPoint == null)
         {
@@ -80,7 +100,6 @@ public class TempCharcontrol : MonoBehaviour
                 if (enemyHealth != null)
                 {
                     enemyHealth.TakeDamage(damage);
-                    //enemyHealth.TakeDamage(bulletDamage, false); for bullet
                 }
                 else
                 {

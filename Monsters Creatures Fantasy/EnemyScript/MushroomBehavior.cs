@@ -25,6 +25,7 @@ public class MushroomBehavior : NetworkBehaviour
     public float attackDelay = 2.5f;
     [SyncVar] private bool isAttacking = false;
     [SyncVar] private bool playerInRange = false;
+    [SyncVar(hook = nameof(OnDirectionChanged))] private bool isFacingRight = true;
     int check = 0;
     #endregion
 
@@ -58,22 +59,22 @@ public class MushroomBehavior : NetworkBehaviour
             {
                 if (player.position.x > transform.position.x)
                 {
-                    spriteRenderer.flipX = false;
+                    isFacingRight = true;
                 }
                 else
                 {
-                    spriteRenderer.flipX = true;
+                    isFacingRight = false;
                 }
             }
 
-            // This is just so the hitbox follows the direction of the sprite
-            if (spriteRenderer.flipX)
+            // Sync hitbox direction
+            if (isFacingRight)
             {
-                Attackpoint.transform.localPosition = new Vector3(-Mathf.Abs(initialAttackPointLocalPosition.x), initialAttackPointLocalPosition.y, initialAttackPointLocalPosition.z);
+                Attackpoint.transform.localPosition = new Vector3(Mathf.Abs(initialAttackPointLocalPosition.x), initialAttackPointLocalPosition.y, initialAttackPointLocalPosition.z);
             }
             else
             {
-                Attackpoint.transform.localPosition = new Vector3(Mathf.Abs(initialAttackPointLocalPosition.x), initialAttackPointLocalPosition.y, initialAttackPointLocalPosition.z);
+                Attackpoint.transform.localPosition = new Vector3(-Mathf.Abs(initialAttackPointLocalPosition.x), initialAttackPointLocalPosition.y, initialAttackPointLocalPosition.z);
             }
         }
     }
@@ -87,7 +88,7 @@ public class MushroomBehavior : NetworkBehaviour
         isAttacking = false;
     }
 
-    [Command]
+    [Server]
     public void SetPlayerInRange(bool inRange, Transform playerTransform)
     {
         playerInRange = inRange;
@@ -114,13 +115,13 @@ public class MushroomBehavior : NetworkBehaviour
                     Debug.Log("hit player" + check);
                     hasHitPlayer = true;
                     check++;
-                    Health health = collider.GetComponent<Health>();
-                    if (health != null)
-                    {
-                        Debug.Log("Player health before damage: " + health.CurrentHealth);
-                        health.TakeDamage(10); // Adjust the damage value as needed
-                        Debug.Log("Player health after damage: " + health.CurrentHealth);
-                    }
+                    // Health health = collider.GetComponent<Health>();
+                    // if (health != null)
+                    // {
+                    //     Debug.Log("Player health before damage: " + health.CurrentHealth);
+                    //     health.TakeDamage(10); // Adjust the damage value as needed
+                    //     Debug.Log("Player health after damage: " + health.CurrentHealth);
+                    // }
                     else
                     {
                         Debug.LogError("Player does not have a PlayerHealth component: " + collider.name);
@@ -134,6 +135,11 @@ public class MushroomBehavior : NetworkBehaviour
     public void SetHitAnimationPlaying(bool isPlaying)
     {
         isHitAnimationPlaying = isPlaying;
+    }
+
+    void OnDirectionChanged(bool oldValue, bool newValue)
+    {
+        spriteRenderer.flipX = !newValue;
     }
 
     private void OnDrawGizmos()
