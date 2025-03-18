@@ -10,11 +10,13 @@ public class PlayerMovement : NetworkBehaviour
     public static bool isGrounded;
     private Rigidbody2D rb;
     private Vector3 originalPosition; // Variable to store the original position
+    private Health health; // Reference to the Health script
 
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         originalPosition = transform.position; // Store the original position
+        health = GetComponent<Health>(); // Automatically find the Health component
         SetCameraTarget();
     }
 
@@ -65,7 +67,13 @@ public class PlayerMovement : NetworkBehaviour
         else if (collision.gameObject.CompareTag("SafetyNet"))
         {
             Debug.Log("Player has collided with the safety net.");
+            CmdTakeDamage(10); // Take damage when colliding with the safety net
             Respawn();
+        }
+        else if (collision.gameObject.CompareTag("Enemy"))
+        {
+            Debug.Log("Player has collided with an enemy.");
+            CmdTakeDamage(10); // Take damage when colliding with an enemy
         }
     }
 
@@ -77,6 +85,15 @@ public class PlayerMovement : NetworkBehaviour
         {
             Debug.Log("Player has left the ground.");
             isGrounded = false;
+        }
+    }
+
+    [Command]
+    void CmdTakeDamage(float amount)
+    {
+        if (health != null)
+        {
+            health.TakeDamage(amount);
         }
     }
 
