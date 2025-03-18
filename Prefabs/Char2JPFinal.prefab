@@ -174,7 +174,7 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
-  jumpForce: 10
+  jumpForce: 7
 --- !u!114 &2889990639737821720
 MonoBehaviour:
   m_ObjectHideFlags: 0

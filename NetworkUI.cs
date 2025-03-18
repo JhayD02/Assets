@@ -161,7 +161,8 @@ public class NetworkUI : NetworkManager
         GameObject playerPrefab = (numPlayers % 2 == 0) ? playerPrefab1 : playerPrefab2;
 
         // Instantiate the chosen player prefab
-        GameObject player = Instantiate(playerPrefab);
+        Transform startPos = NetworkManager.startPositions[numPlayers % 2];
+        GameObject player = Instantiate(playerPrefab, startPos.position, startPos.rotation);
 
         // Add the player to the connection
         NetworkServer.AddPlayerForConnection(conn, player);
