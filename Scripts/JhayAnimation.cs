@@ -10,12 +10,15 @@ public class JhayAnimation : NetworkBehaviour
     int damage = 25;
     public float attackRadius = 1f;
     public Transform attackPoint;
+    
+    AudioManager audioManager;
 
     // Start is called before the first frame update
     void Start()
     {
         animator = GetComponent<Animator>();
         networkAnimator = GetComponent<NetworkAnimator>();
+        audioManager = GameObject.FindGameObjectWithTag("AudioManager").GetComponent<AudioManager>();
     }
 
     // Update is called once per frame
@@ -24,6 +27,10 @@ public class JhayAnimation : NetworkBehaviour
         if (!isLocalPlayer) return;
 
         float horizontalInput = Input.GetAxisRaw("Horizontal");
+        if (Input.GetAxisRaw("Horizontal") == 0)
+        {
+            audioManager.PlayWalkSound();
+        }
         animator.SetFloat("Walk", horizontalInput);
 
         animator.SetBool("isGrounded", PlayerMovement.isGrounded);
@@ -40,26 +47,31 @@ public class JhayAnimation : NetworkBehaviour
         if (Input.GetKeyDown(KeyCode.Space) && PlayerMovement.isGrounded)
         {
             networkAnimator.SetTrigger("Jump");
+            audioManager.PlaySFX(audioManager.jumpSound);
         }
 
         if (Input.GetButtonDown("Fire1"))
         {
             networkAnimator.SetTrigger("Melee");
+            audioManager.PlaySFX(audioManager.punchSound);
         }
         
         if (Input.GetButtonDown("Fire2"))
         {
             networkAnimator.SetTrigger("Shoot");
+            audioManager.PlaySFX(audioManager.shootSound);
         }
 
         if (Input.GetKeyDown(KeyCode.H))
         {
             networkAnimator.SetTrigger("Hit");
+            audioManager.PlaySFX(audioManager.damageSound);
         }
 
         if (Input.GetKeyDown(KeyCode.G))
         {
             networkAnimator.SetTrigger("Death");
+            audioManager.PlaySFX(audioManager.deathSound);
         }
     }
 
