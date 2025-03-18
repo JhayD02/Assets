@@ -149,10 +149,10 @@ public class BossBehavior : NetworkBehaviour
                     //     health.TakeDamage(35);
                     //     Debug.Log("Player hit: " + collider.name + ", Health after damage: " + health.CurrentHealth);
                     // }
-                    else
-                    {
-                        Debug.LogError("Player does not have a Health component: " + collider.name);
-                    }
+                    // else
+                    // {
+                    //     Debug.LogError("Player does not have a Health component: " + collider.name);
+                    // }
                     
                     break;
                 }
