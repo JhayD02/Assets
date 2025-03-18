@@ -9,7 +9,7 @@ public class CameraSript : NetworkBehaviour
     public List<Transform> targets = new List<Transform>();
     public float smoothTime = .5f;
     public float minZoom = 30;
-    public float maxZoom = 10;
+    public float maxZoom = 7;
     public float zoomLimiter = 40;
 
     public Camera cam;
@@ -20,7 +20,7 @@ public class CameraSript : NetworkBehaviour
     {
         cam = GetComponent<Camera>();
         cam.orthographic = true; // Set the camera to orthographic mode
-        cam.orthographicSize = 5; // Adjust the size as needed
+        cam.orthographicSize = 7; // Adjust the size as needed
     }
 
     [ClientCallback]
