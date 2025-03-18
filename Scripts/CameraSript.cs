@@ -1,9 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Mirror;
 
-public class CameraSript : NetworkBehaviour
+public class CameraSript : MonoBehaviour
 {
     public Vector3 offset;
     public List<Transform> targets = new List<Transform>();
@@ -33,17 +32,10 @@ public class CameraSript : NetworkBehaviour
         Zoom();
     }
 
-    [ClientRpc]
-    void RpcUpdateCamera(Vector3 newPosition, float newZoom)
-    {
-        transform.position = Vector3.SmoothDamp(transform.position, newPosition, ref velocity, smoothTime);
-        cam.orthographicSize = Mathf.Lerp(cam.orthographicSize, newZoom, Time.deltaTime);
-    }
-
     void Zoom()
     {
         float newZoom = Mathf.Lerp(maxZoom, minZoom, GetGreatestDistance() / zoomLimiter);
-        RpcUpdateCamera(transform.position, newZoom);
+        cam.orthographicSize = Mathf.Lerp(cam.orthographicSize, newZoom, Time.deltaTime);
     }
 
     void Move()
@@ -51,7 +43,7 @@ public class CameraSript : NetworkBehaviour
         Vector3 centerPoint = GetCenterPoint();
         Vector3 newPosition = centerPoint + offset;
         newPosition.z = -10; // Ensure the camera is positioned correctly in the 2D plane
-        RpcUpdateCamera(newPosition, cam.orthographicSize);
+        transform.position = Vector3.SmoothDamp(transform.position, newPosition, ref velocity, smoothTime);
     }
 
     float GetGreatestDistance()
