@@ -169,6 +169,9 @@ public class NetworkUI : NetworkManager
         // Add the player to the connection
         NetworkServer.AddPlayerForConnection(conn, player);
 
+        // Add the player to the camera targets
+        cameraScript.AddTarget(player.transform);
+
         // Set the player as the camera target if this is the local player
         if (conn.identity.isLocalPlayer)
         {

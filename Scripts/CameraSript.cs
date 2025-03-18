@@ -5,7 +5,7 @@ using UnityEngine;
 public class CameraSript : MonoBehaviour
 {
     public Vector3 offset;
-    public List<Transform> targets;
+    public List<Transform> targets = new List<Transform>();
     public float smoothTime = .5f;
     public float minZoom = 40;
     public float maxZoom = 10;
