@@ -146,4 +146,10 @@ public class JhayAnimation : NetworkBehaviour
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(attackPoint.position, attackRadius);
     }
+
+    public void TriggerHit()
+    {
+        networkAnimator.SetTrigger("Hit");
+        audioManager.PlaySFX(audioManager.damageSound);
+    }
 }

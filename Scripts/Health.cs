@@ -17,6 +17,7 @@ public class Health : NetworkBehaviour
     private Transform healthBar; // Reference to the health bar transform
     private Animator animator; // Reference to the Animator component
     private WinConScript winConScript; // Reference to the WinConScript component
+    private JhayAnimation jhayAnimation; // Reference to the JhayAnimation component
 
     // Start is called before the first frame update
     void Start()
@@ -25,6 +26,7 @@ public class Health : NetworkBehaviour
         SetInitialHealthBarScale();
         UpdateHealthBar();
         animator = GetComponent<Animator>(); // Get the Animator component
+        jhayAnimation = GetComponent<JhayAnimation>(); // Get the JhayAnimation component
 
         // Find the WinConScript in the scene
         GameObject winConObject = GameObject.Find("wincond");
@@ -36,6 +38,11 @@ public class Health : NetworkBehaviour
         if (winConScript == null)
         {
             Debug.LogError("WinConScript component not found in the 'wincond' GameObject.");
+        }
+
+        if (jhayAnimation == null)
+        {
+            Debug.LogError("JhayAnimation component not found on the player.");
         }
     }
 
@@ -51,6 +58,8 @@ public class Health : NetworkBehaviour
         currentHealth -= amount;
         currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);
         UpdateHealthBar();
+        RpcPlayHitAnimation(); // Trigger the hit animation on all clients
+
         if (currentHealth <= 0)
         {
             // Handle death
@@ -105,7 +114,16 @@ public class Health : NetworkBehaviour
     {
         if (animator != null)
         {
-            animator.SetTrigger("Death"); // Assumes you have a "Die" trigger in your Animator
+            animator.SetTrigger("Death"); // Assumes you have a "Death" trigger in your Animator
+        }
+    }
+
+    [ClientRpc]
+    private void RpcPlayHitAnimation()
+    {
+        if (jhayAnimation != null)
+        {
+            jhayAnimation.TriggerHit(); // Trigger the hit animation
         }
     }
 }
