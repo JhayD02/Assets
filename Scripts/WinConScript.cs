@@ -43,10 +43,7 @@ public class WinConScript : NetworkBehaviour
 
         if (playerHealth != null && playerHealth.CurrentHealth <= 0)
         {
-            if (isLocalPlayer)
-            {
-                CmdLoseGame();
-            }
+            CmdLoseGame();
         }
     }
 
@@ -65,7 +62,7 @@ public class WinConScript : NetworkBehaviour
 
     void OnTriggerEnter(Collider other)
     {
-        if (isLocalPlayer && other.gameObject.CompareTag("WinConBox"))
+        if (other.gameObject.CompareTag("WinConBox"))
         {
             CmdWinGame();
         }
