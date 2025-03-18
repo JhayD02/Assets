@@ -192,10 +192,10 @@ public class SkeletonBehavior : NetworkBehaviour
                     //     health.TakeDamage(10); // Adjust the damage value as needed
                     //     Debug.Log("Player health after damage: " + health.CurrentHealth);
                     // }
-                    else
-                    {
-                        Debug.LogError("Player does not have a PlayerHealth component: " + collider.name);
-                    }
+                    // else
+                    // {
+                    //     Debug.LogError("Player does not have a PlayerHealth component: " + collider.name);
+                    // }
                     break;
                 }
             }
