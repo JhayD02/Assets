@@ -169,8 +169,19 @@ public class NetworkUI : NetworkManager
         // Add the player to the connection
         NetworkServer.AddPlayerForConnection(conn, player);
 
+        // Debug log to check if the player is instantiated
+        Debug.Log($"Player instantiated: {player.name}");
+
         // Add the player to the camera targets
-        cameraScript.AddTarget(player.transform);
+        if (cameraScript != null)
+        {
+            cameraScript.AddTarget(player.transform);
+            Debug.Log($"Player {player.name} added to camera targets.");
+        }
+        else
+        {
+            Debug.LogError("CameraSript not found!");
+        }
 
         // Set the player as the camera target if this is the local player
         if (conn.identity.isLocalPlayer)

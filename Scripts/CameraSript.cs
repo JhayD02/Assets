@@ -1,8 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Mirror;
 
-public class CameraSript : MonoBehaviour
+public class CameraSript : NetworkBehaviour
 {
     public Vector3 offset;
     public List<Transform> targets = new List<Transform>();
@@ -32,10 +33,17 @@ public class CameraSript : MonoBehaviour
         Zoom();
     }
 
+    [ClientRpc]
+    void RpcUpdateCamera(Vector3 newPosition, float newZoom)
+    {
+        transform.position = Vector3.SmoothDamp(transform.position, newPosition, ref velocity, smoothTime);
+        cam.orthographicSize = Mathf.Lerp(cam.orthographicSize, newZoom, Time.deltaTime);
+    }
+
     void Zoom()
     {
         float newZoom = Mathf.Lerp(maxZoom, minZoom, GetGreatestDistance() / zoomLimiter);
-        cam.orthographicSize = Mathf.Lerp(cam.orthographicSize, newZoom, Time.deltaTime);
+        RpcUpdateCamera(transform.position, newZoom);
     }
 
     void Move()
@@ -43,7 +51,7 @@ public class CameraSript : MonoBehaviour
         Vector3 centerPoint = GetCenterPoint();
         Vector3 newPosition = centerPoint + offset;
         newPosition.z = -10; // Ensure the camera is positioned correctly in the 2D plane
-        transform.position = Vector3.SmoothDamp(transform.position, newPosition, ref velocity, smoothTime);
+        RpcUpdateCamera(newPosition, cam.orthographicSize);
     }
 
     float GetGreatestDistance()
@@ -80,5 +88,14 @@ public class CameraSript : MonoBehaviour
     {
         targets.Clear();
         targets.Add(target);
+    }
+
+    // New method to add multiple targets
+    public void AddTargets(List<Transform> newTargets)
+    {
+        foreach (var target in newTargets)
+        {
+            targets.Add(target);
+        }
     }
 }
