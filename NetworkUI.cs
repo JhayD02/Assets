@@ -33,9 +33,12 @@ public class NetworkUI : NetworkManager
     [SerializeField] private GameObject playerPrefab1;
     [SerializeField] private GameObject playerPrefab2;
 
+    private CameraSript cameraScript;
+
     void Start()
     {
         networkTransport = GetComponent<TelepathyTransport>();
+        cameraScript = FindObjectOfType<CameraSript>();
 
         mainMenuPanel.SetActive(false);
         hostPanel.SetActive(false);
@@ -165,6 +168,9 @@ public class NetworkUI : NetworkManager
 
         // Add the player to the connection
         NetworkServer.AddPlayerForConnection(conn, player);
+
+        // Set the player as the camera target
+        cameraScript.SetTarget(player.transform);
     }
 
     public string GetLocalIPAddress()

@@ -73,5 +73,9 @@ public class CameraSript : MonoBehaviour
         targets.Add(target);
     }
 
-    
+    public void SetTarget(Transform target)
+    {
+        targets.Clear();
+        targets.Add(target);
+    }
 }
