@@ -50,10 +50,25 @@ public class FireballScript : NetworkBehaviour
         NetworkServer.Destroy(gameObject);
     }
 
-    private void OnTriggerEnter(Collider other)
+    private void OnCollisionEnter(Collision collision)
     {
-        if (other.CompareTag("Player"))
+        Debug.Log("Fireball collided with: " + collision.gameObject.name);
+
+        if (collision.gameObject.CompareTag("Player"))
         {
+            Debug.Log("Fireball hit the player");
+
+            Health playerHealth = collision.gameObject.GetComponent<Health>();
+            if (playerHealth != null)
+            {
+                Debug.Log("Player health before damage: " + playerHealth.CurrentHealth);
+                playerHealth.TakeDamage(25); // Adjust the damage value as needed
+                Debug.Log("Player health after damage: " + playerHealth.CurrentHealth);
+            }
+            else
+            {
+                Debug.LogError("Player does not have a Health component");
+            }
             NetworkServer.Destroy(gameObject);
         }
     }
