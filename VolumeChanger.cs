@@ -5,7 +5,7 @@ using UnityEngine.Audio;
 using Mirror;
 using UnityEngine.UI;
 
-public class VolumeChanger : NetworkBehaviour
+public class VolumeChanger : MonoBehaviour
 {
     [SerializeField] private Slider volumeSlider;
 
