@@ -880,8 +880,8 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 1816506345}
-        m_TargetAssemblyTypeName: Mirror.NetworkManager, Mirror
-        m_MethodName: OnStopHost
+        m_TargetAssemblyTypeName: NetworkUI, Assembly-CSharp
+        m_MethodName: StopHosting
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -4290,7 +4290,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &566032393
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9144,6 +9144,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1822276075}
     m_Modifications:
+    - target: {fileID: 939802616667156969, guid: b4c5cedc75836674bac036b708d6024d, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.53
+      objectReference: {fileID: 0}
     - target: {fileID: 1982204884760925278, guid: b4c5cedc75836674bac036b708d6024d, type: 3}
       propertyPath: sceneId
       value: 2070493169
@@ -26369,8 +26373,8 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 1816506345}
-        m_TargetAssemblyTypeName: Mirror.NetworkManager, Mirror
-        m_MethodName: OnStopClient
+        m_TargetAssemblyTypeName: NetworkUI, Assembly-CSharp
+        m_MethodName: StopClientConnection
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
