@@ -11,7 +11,7 @@ public class CameraSript : MonoBehaviour
     public float maxZoom = 10;
     public float zoomLimiter = 50;
 
-    private Camera cam;
+    public Camera cam;
     private Vector3 velocity;
 
     void Start()
