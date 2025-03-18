@@ -45,7 +45,7 @@ public class PlayerMovement : NetworkBehaviour
 
         if (Input.GetKey(KeyCode.LeftShift))
         {
-            sprintSpeed = 0.05f;
+            sprintSpeed = 0.02f;
         }
         else
         {
