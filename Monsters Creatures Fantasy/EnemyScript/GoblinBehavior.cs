@@ -153,6 +153,17 @@ public void attack()
                 Debug.Log("hit player" + check);
                 hasHitPlayer = true;
                 check++;
+                Health health = collider.GetComponent<Health>();
+                if (health != null)
+                {
+                    Debug.Log("Player health before damage: " + health.CurrentHealth);
+                    health.TakeDamage(10); // Adjust the damage value as needed
+                    Debug.Log("Player health after damage: " + health.CurrentHealth);
+                }
+                else
+                {
+                    Debug.LogError("Player does not have a PlayerHealth component: " + collider.name);
+                }
                 break;
             }
         }
