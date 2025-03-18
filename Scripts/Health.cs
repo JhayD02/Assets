@@ -16,6 +16,7 @@ public class Health : NetworkBehaviour
     [SerializeField]
     private Transform healthBar; // Reference to the health bar transform
     private Animator animator; // Reference to the Animator component
+    private WinConScript winConScript; // Reference to the WinConScript component
 
     // Start is called before the first frame update
     void Start()
@@ -24,6 +25,12 @@ public class Health : NetworkBehaviour
         SetInitialHealthBarScale();
         UpdateHealthBar();
         animator = GetComponent<Animator>(); // Get the Animator component
+        winConScript = GetComponent<WinConScript>(); // Get the WinConScript component
+
+        if (winConScript == null)
+        {
+            Debug.LogError("WinConScript component not found on the GameObject.");
+        }
     }
 
     // Update is called once per frame
@@ -43,8 +50,16 @@ public class Health : NetworkBehaviour
             // Handle death
             Debug.Log("Player is dead");
             RpcPlayDeathAnimation(); // Trigger the death animation on all clients
-                                     // Call the lose game command
-            GetComponent<WinConScript>().CmdLoseGame();
+
+            // Call the lose game command
+            if (winConScript != null)
+            {
+                winConScript.CmdLoseGame();
+            }
+            else
+            {
+                Debug.LogError("WinConScript component is null.");
+            }
         }
     }
 
