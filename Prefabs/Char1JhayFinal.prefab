@@ -31,6 +31,37 @@ Transform:
   m_Children: []
   m_Father: {fileID: 987141528833516180}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &2594534746957847915
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8410589881067351239}
+  m_Layer: 0
+  m_Name: Attackpoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8410589881067351239
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2594534746957847915}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 1.73, y: -0.3, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1177944650818257578}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &4123575553101762716
 GameObject:
   m_ObjectHideFlags: 0
@@ -198,6 +229,7 @@ Transform:
   m_Children:
   - {fileID: 116303058917063732}
   - {fileID: 7304657804373785704}
+  - {fileID: 8410589881067351239}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &4944934043580646967
@@ -350,9 +382,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 17895e8dee87bbb44bd751b2c716997a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 1
-  syncInterval: 0
   maxHealth: 100
   healthBar: {fileID: 7304657804373785704}
 --- !u!1001 &2531526464738162070
@@ -410,6 +439,14 @@ PrefabInstance:
     - target: {fileID: 7301877023760955170, guid: eeafc719bb3ec3842815334b67be8614, type: 3}
       propertyPath: _assetId
       value: 3909890757
+      objectReference: {fileID: 0}
+    - target: {fileID: 7762396528454700063, guid: eeafc719bb3ec3842815334b67be8614, type: 3}
+      propertyPath: attackPoint
+      value: 
+      objectReference: {fileID: 8410589881067351239}
+    - target: {fileID: 7762396528454700063, guid: eeafc719bb3ec3842815334b67be8614, type: 3}
+      propertyPath: attackRadius
+      value: 0.37
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 7301877023760955170, guid: eeafc719bb3ec3842815334b67be8614, type: 3}

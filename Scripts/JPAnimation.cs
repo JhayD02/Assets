@@ -55,19 +55,17 @@ public class JPAnimation : MonoBehaviour
     public void ActivateHitbox()
     {
         hitbox.SetActive(true);
-         if (enemy.CompareTag("Enemy"))
+        GameObject enemy = GameObject.FindGameObjectWithTag("Enemy");
+        int damage = 10;
+
+         if (enemy != null)
+        {
+            EnemyHealth enemyHealth = enemy.GetComponent<EnemyHealth>();
+            if (enemyHealth != null)
             {
-                Debug.Log("Hit " + enemy.name);
-                EnemyHealth enemyHealth = enemy.GetComponent<EnemyHealth>();
-                if (enemyHealth != null)
-                {
-                    enemyHealth.TakeDamage(damage);
-                }
-                else
-                {
-                    Debug.LogError("Enemy does not have an EnemyHealth component: " + enemy.name);
-                }
+                enemyHealth.TakeDamage(damage);
             }
+        }
     }
 
     // Called by animation event
