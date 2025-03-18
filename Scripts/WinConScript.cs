@@ -7,8 +7,8 @@ using Mirror; // For networking
 
 public class WinConScript : NetworkBehaviour
 {
-    public GameObject losePanel; // Reference to the lose panel GameObject
-    public GameObject winPanel; // Reference to the win panel GameObject
+    public GameObject losePanel; 
+    public GameObject winPanel; 
     private Health playerHealth;
 
     // Start is called before the first frame update
@@ -100,7 +100,7 @@ public class WinConScript : NetworkBehaviour
     void RpcLoseGame()
     {
         Debug.Log("RpcLoseGame called");
-        Time.timeScale = 0; // Pause the game
+        Time.timeScale = 0;
         if (losePanel != null)
         {
             losePanel.SetActive(true);
