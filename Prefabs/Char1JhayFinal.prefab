@@ -206,7 +206,7 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
-  jumpForce: 10
+  jumpForce: 7
 --- !u!61 &2203316238042063236
 BoxCollider2D:
   m_ObjectHideFlags: 0
