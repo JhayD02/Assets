@@ -6,6 +6,8 @@ public class Chest : MonoBehaviour
     private static int chestsCollected = 0;
     private static int totalChests = 2;
 
+    public static bool canWin = false;
+
     void OnTriggerEnter2D(Collider2D other)
     {
         if (other.CompareTag("Player")) // Ensure only players collect
@@ -30,6 +32,7 @@ public class Chest : MonoBehaviour
 
             if (chestsCollected >= totalChests)
             {
+                canWin = true;
                 Debug.Log("Both chests collected! Proceeding...");
                 // Add logic here to open a door, trigger an event, etc.
             }

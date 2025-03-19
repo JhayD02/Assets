@@ -89,7 +89,7 @@ public class JhayAnimation : NetworkBehaviour
             // Call the lose game command
             if (winConScript != null)
             {
-                winConScript.CmdLoseGame();
+                // winConScript.CmdLoseGame();
             }
             else
             {
@@ -151,5 +151,11 @@ public class JhayAnimation : NetworkBehaviour
     {
         networkAnimator.SetTrigger("Hit");
         audioManager.PlaySFX(audioManager.damageSound);
+    }
+
+    public void TriggerDeath()
+    {
+        networkAnimator.SetTrigger("Death");
+        audioManager.PlaySFX(audioManager.deathSound);
     }
 }

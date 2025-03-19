@@ -56,7 +56,7 @@ public class WinConScript : NetworkBehaviour
             ShowLosePanel();
         }
 
-        if (Input.GetKeyDown(KeyCode.P))
+        if (Input.GetKeyDown(KeyCode.P) && Chest.canWin)
         {
             ShowWinPanel();
         }
@@ -83,7 +83,7 @@ public class WinConScript : NetworkBehaviour
         }
     }
 
-    [Command]
+    [Command(requiresAuthority = false)]
     public void CmdLoseGame()
     {
         Debug.Log("CmdLoseGame called");
@@ -100,7 +100,7 @@ public class WinConScript : NetworkBehaviour
     void RpcLoseGame()
     {
         Debug.Log("RpcLoseGame called");
-        Time.timeScale = 0;
+        // Time.timeScale = 0;
         if (losePanel != null)
         {
             losePanel.SetActive(true);
@@ -124,7 +124,7 @@ public class WinConScript : NetworkBehaviour
 
     void ShowLosePanel()
     {
-        Time.timeScale = 0; // Pause the game
+        // Time.timeScale = 0; // Pause the game
         if (losePanel != null)
         {
             losePanel.SetActive(true);
