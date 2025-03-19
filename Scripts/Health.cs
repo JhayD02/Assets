@@ -13,6 +13,8 @@ public class Health : NetworkBehaviour
 
     public float CurrentHealth => currentHealth;
     public float MaxHealth => maxHealth;
+    [SyncVar] public bool isDead = false;
+    private bool hitTriggered = false;
 
     [SerializeField]
     public HealthBar healthBar; // Reference to the health bar transform
@@ -27,7 +29,7 @@ public class Health : NetworkBehaviour
         SetInitialHealthBarScale();
         UpdateHealthBar();
         animator = GetComponent<Animator>(); // Get the Animator component
-        jhayAnimation = GetComponent<JhayAnimation>(); // Get the JhayAnimation component
+        jhayAnimation = GetComponentInChildren<JhayAnimation>(); // Get the JhayAnimation component from children
 
         // Find the WinConScript in the scene
         GameObject winConObject = GameObject.Find("wincond");
@@ -54,20 +56,18 @@ public class Health : NetworkBehaviour
     }
 
     [Server]
-    public void TakeDamage(float amount)
+    public void TakeDamage(float amount, bool triggerHitAnimation = true)
     {
+        if (isDead) return;
+
         currentHealth -= amount;
         currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);
         UpdateHealthBar();
-        RpcPlayHitAnimation(); // Trigger the hit animation on all clients
 
         if (currentHealth <= 0)
         {
-            // Handle death
-            Debug.Log("Player is dead");
-            RpcPlayDeathAnimation(); // Trigger the death animation on all clients
-
-            // Call the lose game command
+            isDead = true;
+            RpcHandleDeath();
             if (winConScript != null)
             {
                 winConScript.CmdLoseGame();
@@ -76,6 +76,12 @@ public class Health : NetworkBehaviour
             {
                 Debug.LogError("WinConScript component is null.");
             }
+        }
+        else if (triggerHitAnimation && !hitTriggered) // Only trigger if not already hit
+        {
+            hitTriggered = true;
+            RpcHandleHit();
+            StartCoroutine(ResetHitTrigger()); // Reset hit trigger after a short delay
         }
     }
 
@@ -105,26 +111,36 @@ public class Health : NetworkBehaviour
             healthBar.UpdateHealthBar(currentHealth, maxHealth);
         }
     }
-        private void OnHealthChanged(float oldHealth, float newHealth)
+
+    private void OnHealthChanged(float oldHealth, float newHealth)
     {
         UpdateHealthBar();
     }
 
     [ClientRpc]
-    private void RpcPlayDeathAnimation()
+    void RpcHandleHit()
     {
-        if (animator != null)
-        {
-            animator.SetTrigger("Death"); // Assumes you have a "Death" trigger in your Animator
-        }
+        if (isDead) return; // Prevent hit animation if already dead
+
+        // JUST TO PLAY ANIMATION
+        Debug.Log("Player hit, triggering animations");
+        if (jhayAnimation != null) jhayAnimation.TriggerHit();
     }
 
     [ClientRpc]
-    private void RpcPlayHitAnimation()
+    void RpcHandleDeath()
     {
         if (jhayAnimation != null)
         {
-            jhayAnimation.TriggerHit(); // Trigger the hit animation
+            Debug.Log("Triggering death animation");
+            jhayAnimation.TriggerDeath(); // Assumes you have a "Death" trigger in your Animator
         }
+        Debug.Log("Player is dead");
+    }
+
+    private IEnumerator ResetHitTrigger()
+    {
+        yield return new WaitForSeconds(0.5f); // Adjust delay as needed
+        hitTriggered = false;
     }
 }
